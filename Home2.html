@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Additional Styles */
+    .recipe-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container recipe-container">
+    <a class="btn btn-primary" href="Create.html">Create New Recipe</a>
+    <h1 class="text-center">Recipe: <span id="recipe-title"></span></h1>
+    <p class="text-center">By <span id="recipe-author"></span></p>
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Description</h3>
+        <p id="recipe-description"></p>
+        <h3>Ingredients</h3>
+        <ul id="recipe-ingredients"></ul>
+      </div>
+      <div class="col-md-6">
+        <h3>Instructions</h3>
+        <ol id="recipe-instructions"></ol>
+      </div>
+    </div>
+    <p><strong>Prep Time:</strong> <span id="recipe-prep-time"></span></p>
+    <p><strong>Cook Time:</strong> <span id="recipe-cook-time"></span></p>
+    <p><strong>Total Time:</strong> <span id="recipe-total-time"></span></p>
+    <p><strong>Servings:</strong> <span id="recipe-servings"></span></p>
+  </div>
+
+  <!-- Bootstrap JS (Optional) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Your JSON data
+    const recipeData = {
+      "recipe": {
+        "title": "Muffin aux bananes",
+        "author": "Elora T",
+        "description": "muffin",
+        "prep_time": "40 minutes",
+        "cook_time": "40 minutes",
+        "total_time": "1 heure 20 minutes",
+        "servings": "12 muffins",
+        "ingredients": [
+          "farine",
+          "sucre",
+          "poudre à pate",
+          "sel"
+        ],
+        "instructions": [
+          "mélanger",
+          "dans un autre bol",
+          "mettre le mélange de farine"
+        ]
+      }
+    };
+
+    // Function to populate recipe details
+    function populateRecipe(data) {
+      document.getElementById('recipe-title').textContent = data.recipe.title;
+      document.getElementById('recipe-author').textContent = data.recipe.author;
+      document.getElementById('recipe-description').textContent = data.recipe.description;
+      document.getElementById('recipe-prep-time').textContent = data.recipe.prep_time;
+      document.getElementById('recipe-cook-time').textContent = data.recipe.cook_time;
+      document.getElementById('recipe-total-time').textContent = data.recipe.total_time;
+      document.getElementById('recipe-servings').textContent = data.recipe.servings;
+
+      const ingredientsList = document.getElementById('recipe-ingredients');
+      const instructionsList = document.getElementById('recipe-instructions');
+
+      data.recipe.ingredients.forEach((ingredient) => {
+        const li = document.createElement('li');
+        li.textContent = ingredient;
+        ingredientsList.appendChild(li);
+      });
+
+      data.recipe.instructions.forEach((instruction) => {
+        const li = document.createElement('li');
+        li.textContent = instruction;
+        instructionsList.appendChild(li);
+      });
+    }
+
+    // Call the function with recipe data
+    // populateRecipe(recipeData);
+
+    $(document).ready(function () {
+      $.getJSON("json/recipe1.json", function(json) {      
+        populateRecipe(json);
+      });
+    });
+
+  </script>
+</body>
+</html>

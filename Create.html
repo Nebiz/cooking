@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body class="mx-auto">
+  <a class="btn btn-primary" href="Home2.html">Home</a>
+  <h1 style="font-weight: bold;">Nouvelle Recette</h1><br>
+
+  <form id="recipeForm" autocomplete="off">
+    <input autocomplete="false" name="hidden" type="text" style="display:none;">
+
+    <div class="form-floating mb-3">
+      <input type="text" id="title" class="form-control" name="title" placeholder="Titre">
+      <label for="title">Titre</label>
+    </div>
+    
+    <div class="form-floating mb-3">
+      <input type="text" id="author" class="form-control" name="author" placeholder="Auteur">
+      <label for="author">Auteur</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <textarea id="description" class="form-control" name="description" placeholder="Description"></textarea>
+      <label for="description">Description</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="text" id="prep_time" class="form-control" name="prep_time" placeholder="Temps de préparation">
+      <label for="prep_time">Temps de préparation</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="text" id="cook_time" class="form-control" name="cook_time" placeholder="Temps de cuisson">
+      <label for="cook_time">Temps de cuisson</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="text" id="total_time" class="form-control" name="total_time" placeholder="Temps total">
+      <label for="total_time">Temps total</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="text" id="servings" class="form-control" name="servings" placeholder="Portions">
+      <label for="servings">Portions</label>
+    </div>
+    
+    <div class="form-floating mb-3">
+      <textarea id="ingredients" class="form-control" name="ingredients" placeholder="Ingrédients"></textarea>
+      <label for="ingredients">Ingrédients</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <textarea id="instructions" class="form-control" name="instructions" placeholder="Instructions"></textarea>
+      <label for="instructions">Instructions</label>
+    </div>
+    
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+    document.getElementById("recipeForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      
+      const recipeData = {
+        recipe: {
+          title: document.getElementById("title").value,
+          author: document.getElementById("author").value,
+          description: document.getElementById("description").value,
+          prep_time: document.getElementById("prep_time").value,
+          cook_time: document.getElementById("cook_time").value,
+          total_time: document.getElementById("total_time").value,
+          servings: document.getElementById("servings").value,
+          ingredients: document.getElementById("ingredients").value.split("\n").filter(item => item !== ""),
+          instructions: document.getElementById("instructions").value.split("\n").filter(item => item !== "")
+        }
+      };
+
+      console.log(JSON.stringify(recipeData, null, 2)); // null -> undefined
+      // You can send this JSON data to your server or perform any other actions with it.
+
+      downloadJSON(recipeData, recipeData.recipe.title);
+
+    });
+
+    function downloadJSON(content, fileName) {
+      const link = document.createElement("a");
+      const blob = new Blob([JSON.stringify(content, null, 2)], { type: "application/json" });
+
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+
+      link.click();
+      link.remove();
+    }
+  </script>
+
+  <style type="text/css">
+    body {
+      width: 500px;
+      background-image: url('https://images.unsplash.com/photo-1518291344630-4857135fb581');
+      background-repeat: no-repeat;
+      background-size: 100%;
+      background-position: center;
+      background-attachment: cover;
+    }
+
+  </style>
+</body>
+</html>
