@@ -1,0 +1,4 @@
+name: Website1
+runs:
+  - name: Index files
+  uses: prygunov/indexator@0.1
