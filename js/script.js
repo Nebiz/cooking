@@ -30,31 +30,6 @@ $(document).ready(function () {
         }
     }
 
-    // Utility function to escape special characters
-    function escapeHtml(string) {
-        return String(string).replace(/[&<>"']/g, function (s) {
-            return ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;',
-            })[s];
-        });
-    }
-
-    // Windows restricted characters --> \ / : * ? ' < > |
-    function escapeHtmlForWin(string) {
-        return String(string).replace(/[:?*|]/g, function (s) {
-            return ({
-                ':': '&#58;',
-                '?': '&#63;',
-                '*': '&#42;',
-                '|': '&#124;'
-            })[s];
-        });
-    }
-
     function fetchAllJsonFiles(folderPath, callback) {
         const isLocal = window.location.hostname === '127.0.0.1';
         if (isLocal) {
@@ -195,3 +170,33 @@ $(document).ready(function () {
         });
     }
 });
+
+// Utility function to escape special characters
+function escapeHtml(string) {
+    return String(string).replace(/[&<>"]/g, function (s) {
+        return ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            //"'": '&#39;',
+        })[s];
+    });
+}
+
+var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+};
+
+function escapeHtml2(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap(s) {
+        return entityMap[s];
+    });
+}
