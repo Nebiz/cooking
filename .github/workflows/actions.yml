@@ -31,15 +31,22 @@ jobs:
 
           echo "Files added: $added"
           echo "Files deleted: $deleted"
-          echo $added == '1'
-          echo $added == '0'
 
           echo "files_added=$added" >> $GITHUB_ENV
           echo "files_deleted=$deleted" >> $GITHUB_ENV
 
-      - name: Generate JSON file if files were added or removed
-        if: env.files_added != '0' || env.files_deleted != '0'
+      - name: Debugging Environment Variables
         run: |
+          echo "files_added: ${{ env.files_added }}"
+          echo "files_deleted: ${{ env.files_deleted }}"
+
+          echo "test bool 1: ${{ env.files_added == '1' }}"
+          echo "test bool 2: ${{ env.files_added == '0' }}"
+
+      - name: Generate JSON file if files were added or removed
+        if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
+        run: |
+          echo "Generating JSON index..."
           files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != ""))')
           echo "$files" > json_index.json
 
@@ -50,7 +57,7 @@ jobs:
           git commit -m "Update JSON index"
 
       - name: Push changes
-        if: env.files_added != '0' || env.files_deleted != '0'
+        if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
