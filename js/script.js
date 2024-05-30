@@ -57,7 +57,7 @@ $(document).ready(function () {
 
     function fetchAllJsonFiles(folderPath, callback) {
         const isLocal = window.location.hostname === '127.0.0.1';
-        if (!isLocal) {
+        if (isLocal) {
             $.ajax({
                 url: folderPath,
                 success: function (data) {
