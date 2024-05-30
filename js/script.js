@@ -56,25 +56,42 @@ $(document).ready(function () {
     }
 
     function fetchAllJsonFiles(folderPath, callback) {
-        $.ajax({
-            url: folderPath,
-            success: function (data) {
-                const jsonFiles = $(data).find("a:contains('.json')");
-                let jsonObjects = [];
-                let filesProcessed = 0;
+        const isLocal = window.location.hostname === '127.0.0.1';
+        if (!isLocal) {
+            $.ajax({
+                url: folderPath,
+                success: function (data) {
+                    const jsonFiles = $(data).find("a:contains('.json')");
+                    let jsonObjects = [];
+                    let filesProcessed = 0;
 
-                jsonFiles.each(function () {
-                    const fullPath = `${folderPath}${$(this).attr("href").split('/').pop()}`;
-                    $.getJSON(fullPath, function (jsonData) {
+                    jsonFiles.each(function () {
+                        const fullPath = `${folderPath}${$(this).attr("href").split('/').pop()}`;
+                        $.getJSON(fullPath, function (jsonData) {
+                            jsonObjects.push(jsonData);
+                            filesProcessed++;
+                            if (filesProcessed === jsonFiles.length) {
+                                callback(sanitizeJsonObjects(jsonObjects));
+                            }
+                        });
+                    });
+                }
+            });
+        } else {
+            let jsonObjects = [];
+            let filesProcessed = 0;
+            $.getJSON("json_index.json", function (jsonList) {
+                jsonList.files.forEach(fileName => {
+                    $.getJSON(`json/${fileName}`, function (jsonData) {
                         jsonObjects.push(jsonData);
                         filesProcessed++;
-                        if (filesProcessed === jsonFiles.length) {
+                        if (filesProcessed === jsonList.files.length) {
                             callback(sanitizeJsonObjects(jsonObjects));
                         }
-                    });
-                });
-            }
-        });
+                    })
+                })
+            });
+        }
     }
 
     function getRecipeDisplayInfo(jsonObjects) {
