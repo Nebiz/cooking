@@ -1,36 +1,40 @@
-name: Generate JSON file listing all files in 'json' folder
+name: Update JSON Index - file listing all files in 'json' folder
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'json/**'
 
 jobs:
-  generate_json:
+  update-json-index:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate JSON file
+      - name: Check for file additions or deletions
+        id: check_changes
+        run: |
+          added=$(git diff --name-status HEAD^ HEAD | grep '^A' | grep 'json/' | wc -l)
+          deleted=$(git diff --name-status HEAD^ HEAD | grep '^D' | grep 'json/' | wc -l)
+          echo "files_added=$added" >> $GITHUB_ENV
+          echo "files_deleted=$deleted" >> $GITHUB_ENV
+
+      - name: Generate JSON file if files were added or removed
+        if: env.files_added != '0' || env.files_deleted != '0'
         run: |
           files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != ""))')
-          echo '{
-            "files": '"$files"'
-          }' > json_index.json
+          echo "$files" > json_index.json
 
-      - name: Configure git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Commit changes
-        run: |
           git add json_index.json
-          git commit -m "Generate JSON file listing all files in 'json' folder"
+          git commit -m "Update JSON index"
 
       - name: Push changes
+        if: env.files_added != '0' || env.files_deleted != '0'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

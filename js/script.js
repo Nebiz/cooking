@@ -56,7 +56,7 @@ $(document).ready(function () {
             let jsonObjects = [];
             let filesProcessed = 0;
             $.getJSON("json_index.json", function (jsonList) {
-                jsonList.files.forEach(fileName => {
+                jsonList.forEach(fileName => {
                     $.getJSON(`json/${fileName}`, function (jsonData) {
                         jsonObjects.push(jsonData);
                         filesProcessed++;
