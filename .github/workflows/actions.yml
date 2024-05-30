@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetch the last two commits to compare
 
       - name: Check for file additions or deletions
         id: check_changes
