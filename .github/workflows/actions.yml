@@ -12,20 +12,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Generate and commit JSON file
+
+      - name: Generate JSON file
         run: |
+          files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != ""))')
           echo '{
-            "files": [
-              $(ls json)
-            ]
+            "files": '"$files"'
           }' > json_index.json
+
+      - name: Configure git
+        run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
+
+      - name: Commit changes
+        run: |
           git add json_index.json
           git commit -m "Generate JSON file listing all files in 'json' folder"
-          
+
       - name: Push changes
-        uses: ad-m/github-push-action@v0.7.0
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
