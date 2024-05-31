@@ -3,7 +3,7 @@ name: Update JSON Index - file listing all files in 'json' folder
 on:
   push:
     paths:
-      - "json/**"
+      - 'json/**'
 
 jobs:
   update-json-index:
@@ -18,6 +18,9 @@ jobs:
       - name: Check for file additions or deletions
         id: check_changes
         run: |
+          echo "Checking for added or deleted files..."
+          git diff --name-status HEAD^ HEAD
+
           if git rev-parse HEAD^ >/dev/null 2>&1; then
             added=$(git diff --name-status HEAD^ HEAD | grep '^A' | grep 'json/' | wc -l)
             deleted=$(git diff --name-status HEAD^ HEAD | grep '^D' | grep 'json/' | wc -l)
@@ -26,16 +29,21 @@ jobs:
             deleted=0
           fi
 
+          echo "Files added: $added"
+          echo "Files deleted: $deleted"
+
           echo "files_added=$added" >> $GITHUB_ENV
           echo "files_deleted=$deleted" >> $GITHUB_ENV
 
-      - name: Generate JSON index file if files were added or removed
+      - name: Generate JSON file if files were added or removed
         if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
         run: |
+          echo "Generating JSON index..."
           files=$(ls json | jq -R -s 'split("\n") | map(select(. != ""))')
           echo "$files" | jq '.' > json_index.json
 
           git config --global user.name 'github-actions[bot]'
+
           git add json_index.json
           git commit -m "Update JSON index"
 
