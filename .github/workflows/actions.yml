@@ -29,29 +29,19 @@ jobs:
             deleted=0
           fi
 
-          echo "Files added: $added"
-          echo "Files deleted: $deleted"
-
           echo "files_added=$added" >> $GITHUB_ENV
           echo "files_deleted=$deleted" >> $GITHUB_ENV
-
-      - name: Debugging Environment Variables
-        run: |
-          echo "files_added: ${{ env.files_added }}"
-          echo "files_deleted: ${{ env.files_deleted }}"
-
-          echo "test bool 1: ${{ env.files_added == '1' }}"
-          echo "test bool 2: ${{ env.files_added == '0' }}"
 
       - name: Generate JSON file if files were added or removed
         if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
         run: |
           echo "Generating JSON index..."
-          files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != "")) | map("\"" + . + "\"") | "[" + join(",\n") + "]"')
+#          files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != ""))')
           echo "$files" > json_index.json
 
           git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+#          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
           git add json_index.json
           git commit -m "Update JSON index"
