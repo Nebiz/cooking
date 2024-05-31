@@ -18,6 +18,9 @@ jobs:
       - name: Check for file additions or deletions
         id: check_changes
         run: |
+          echo "Checking for file change. Changes:"
+          git diff --name-status HEAD^ HEAD
+
           if git rev-parse HEAD^ >/dev/null 2>&1; then
             added=$(git diff --name-status HEAD^ HEAD | grep '^A' | grep 'json/' | wc -l)
             deleted=$(git diff --name-status HEAD^ HEAD | grep '^D' | grep 'json/' | wc -l)
