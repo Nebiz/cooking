@@ -36,7 +36,7 @@ $(document).ready(function () {
             $.ajax({
                 url: folderPath,
                 success: function (data) {
-                    const jsonFiles = $(data).find("a:contains('.json')");
+                    const jsonFiles = $(data).find("a:contains('.json')").not("a:contains('index.json')");
                     let jsonObjects = [];
                     let filesProcessed = 0;
 
