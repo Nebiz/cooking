@@ -32,8 +32,8 @@ jobs:
       - name: Generate JSON index file if files were added or removed
         if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
         run: |
-          files=$(ls json | jq -R -s -c 'split("\n") | map(select(. != "")) | map("\"" + . + "\"") | "[" + join(",\n") + "]"')
-          echo "$files" > json_index.json
+          files=$(ls json | jq -R -s 'split("\n") | map(select(. != ""))')
+          echo "$files" | jq '.' > json_index.json
 
           git config --global user.name 'github-actions[bot]'
           git add json_index.json
