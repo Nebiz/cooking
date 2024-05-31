@@ -44,7 +44,7 @@ jobs:
 
           git config --global user.name 'github-actions[bot]'
 
-          git add json_index.json
+          git add json/index.json
           git commit -m "Update JSON index"
 
       - name: Push changes
