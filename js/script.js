@@ -60,7 +60,7 @@ $(document).ready(function () {
                     $.getJSON(`json/${fileName}`, function (jsonData) {
                         jsonObjects.push(jsonData);
                         filesProcessed++;
-                        if (filesProcessed === jsonList.files.length) {
+                        if (filesProcessed === jsonList.length) {
                             callback(sanitizeJsonObjects(jsonObjects));
                         }
                     })
