@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "Generating JSON index..."
           files=$(ls json | jq -R -s 'split("\n") | map(select(. != ""))')
-          echo "$files" | jq '.' > json_index.json
+          echo "$files" | jq '.' > json/index.json
 
           git config --global user.name 'github-actions[bot]'
 
