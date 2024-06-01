@@ -5,6 +5,7 @@ $(document).ready(function () {
         showAllRecipes(recipeList);
         $('#searchInput').on("input", filterRecipes);
         setRecipeViewEvents();
+        setReturnHome($('#LogoAndTitle'));
     });
 
     function sanitizeJsonObjects(jsonObjects) {
@@ -40,6 +41,11 @@ $(document).ready(function () {
                     let jsonObjects = [];
                     let filesProcessed = 0;
 
+                    // const myArray = $(data).find("a:contains('.json')").map(function () {
+                    //     return $(this).attr("href").split('/').pop();
+                    // }).get();
+                    // console.log(myArray);
+
                     jsonFiles.each(function () {
                         const fullPath = `${folderPath}${$(this).attr("href").split('/').pop()}`;
                         $.getJSON(fullPath, function (jsonData) {
@@ -55,7 +61,7 @@ $(document).ready(function () {
         } else {
             let jsonObjects = [];
             let filesProcessed = 0;
-            $.getJSON("json/index.json", function (jsonList) {
+            $.getJSON("index.json", function (jsonList) {
                 jsonList.forEach(fileName => {
                     $.getJSON(`json/${fileName}`, function (jsonData) {
                         jsonObjects.push(jsonData);
@@ -150,6 +156,13 @@ $(document).ready(function () {
 
             const matches = keywords.every(keyword => itemName.includes(keyword)); // Check if all keywords are present in title or author
             $(this).toggle(matches);
+        });
+    }
+
+    function setReturnHome(htmlElement) {
+        htmlElement.on("click", function () {
+            $("#recipe-container").hide();
+            $("#search-container").show();
         });
     }
 

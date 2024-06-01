@@ -2,53 +2,27 @@ name: Update JSON Index - file listing all files in 'json' folder
 
 on:
   push:
+    branches: 
+      - main
     paths:
-      - 'json/**'
+      - 'json/**' # run only when changes in folder json
 
 jobs:
   update-json-index:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # Fetch the last two commits to compare
+          ref: ${{ github.head_ref }}
 
-      - name: Check for file additions or deletions
-        id: check_changes
-        run: |
-          echo "Checking for added or deleted files..."
-          git diff --name-status HEAD^ HEAD
-
-          if git rev-parse HEAD^ >/dev/null 2>&1; then
-            added=$(git diff --name-status HEAD^ HEAD | grep '^A' | grep 'json/' | wc -l)
-            deleted=$(git diff --name-status HEAD^ HEAD | grep '^D' | grep 'json/' | wc -l)
-          else
-            added=$(git ls-files --others --exclude-standard -- 'json/*' | wc -l)
-            deleted=0
-          fi
-
-          echo "Files added: $added"
-          echo "Files deleted: $deleted"
-
-          echo "files_added=$added" >> $GITHUB_ENV
-          echo "files_deleted=$deleted" >> $GITHUB_ENV
-
-      - name: Generate JSON file if files were added or removed
-        if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
+      - name: Generate JSON file if changes detected
         run: |
           echo "Generating JSON index..."
-          files=$(ls json | jq -R -s 'split("\n") | map(select(. != ""))')
-          echo "$files" | jq '.' > json/index.json
-
-          git config --global user.name 'github-actions[bot]'
-
-          git add json/index.json
-          git commit -m "Update JSON index"
+          files=$(ls json | grep -v '^index\.json$' | jq -R -s 'split("\n") | map(select(. != ""))')
+          echo "$files" | jq '.' > index.json
 
       - name: Push changes
-        if: ${{ env.files_added != '0' || env.files_deleted != '0' }}
-        uses: ad-m/github-push-action@master
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_message: Update JSON index
