@@ -2,8 +2,6 @@ name: Update JSON Index - file listing all files in 'json' folder
 
 on:
   push:
-    branches: 
-      - main
     paths:
       - 'json/**' # run only when changes in folder json
 
@@ -21,6 +19,7 @@ jobs:
           echo "Generating JSON index..."
           files=$(ls json | jq -R -s 'split("\n") | map(select(. != ""))')
           echo "$files" | jq '.' > index.json
+          git add index.json
 
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
