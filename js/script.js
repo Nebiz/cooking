@@ -19,13 +19,13 @@ $(document).ready(function () {
             const sanitizedObj = {};
             for (let key in obj) {
                 if (obj.hasOwnProperty(key)) {
-                    const sanitizedKey = escapeHtml(DOMPurify.sanitize(key));
+                    const sanitizedKey = DOMPurify.sanitize(key);
                     sanitizedObj[sanitizedKey] = sanitizeJsonObject(obj[key]);
                 }
             }
             return sanitizedObj;
         } else if (typeof obj === 'string') {
-            return escapeHtml(DOMPurify.sanitize(obj));
+            return DOMPurify.sanitize(obj);
         } else {
             return obj;
         }
@@ -86,43 +86,16 @@ $(document).ready(function () {
     }
 
     function showAllRecipes(recipeList) {
-        recipeList.sort((a, b) => new Date(DOMPurify.sanitize(a.date_created)) - new Date(DOMPurify.sanitize(b.date_created)));
+        recipeList.sort((a, b) => new Date(a.date_created) - new Date(b.date_created));
         const template = $($("#template-recipe-preview").html());
 
         recipeList.forEach(recipe => {
             const newItem = template.clone();
-            const sanitizedFileName = escapeHtml(DOMPurify.sanitize(recipe.file_name));
-            const sanitizedTitle = escapeHtml(DOMPurify.sanitize(recipe.title));
-            const sanitizedAuthors = escapeHtml(DOMPurify.sanitize(recipe.author.join(", ")));
-            const sanitizedDescription = escapeHtml(DOMPurify.sanitize(recipe.description));
-
-            newItem.attr('data-item', sanitizedFileName);
-            newItem.attr('data-authors', sanitizedAuthors);
-            newItem.find(".card-title").text(sanitizedTitle).append(`<span class="fst-italic text-secondary fs-6"> by ${sanitizedAuthors}</span>`);
-            newItem.find(".card-text").text(sanitizedDescription);
+            newItem.attr('data-item', DOMPurify.sanitize(recipe.file_name));
+            newItem.find(".card-title").text(DOMPurify.sanitize(recipe.title)).append(`<span class="fst-italic text-secondary fs-6"></span>`);
+            newItem.find(".card-title span").text(` by ${DOMPurify.sanitize(recipe.author.join(", "))}`);
+            newItem.find(".card-text").text(DOMPurify.sanitize(recipe.description));
             $("#all-recipe-container").append(newItem);
-        });
-    }
-
-    function showAllRecipes2(recipeList) {
-        recipeList.sort((a, b) => new Date(a.date_created) - new Date(b.date_created));
-        const templateHtml = $("#template-recipe-preview").html();
-
-        recipeList.forEach(recipe => {
-            // Construct the HTML string
-            const newItemHtml = $(templateHtml).clone()
-                .attr('data-item', recipe.file_name)
-                .attr('data-authors', recipe.author.join(", "))
-                .find(".card-title").text(recipe.title).end()
-                .find(".card-title").append(`<span class="fst-italic text-secondary fs-6"> by ${recipe.author.join(", ")}</span>`).end()
-                .find(".card-text").text(recipe.description).end()
-                .prop('outerHTML');
-
-            const sanitizedHtml = DOMPurify.sanitize(newItemHtml);
-            const sanitizedItem = $(sanitizedHtml);
-
-            console.log(sanitizedItem);
-            $("#all-recipe-container").append(sanitizedItem);
         });
     }
 
@@ -184,19 +157,6 @@ $(document).ready(function () {
     }
 });
 
-// Utility function to escape special characters
-function escapeHtml(string) {
-    return String(string).replace(/[&<>"]/g, function (s) {
-        return ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            //"'": '&#39;',
-        })[s];
-    });
-}
-
 var entityMap = {
     '&': '&amp;',
     '<': '&lt;',
@@ -208,7 +168,7 @@ var entityMap = {
     '=': '&#x3D;'
 };
 
-function escapeHtml2(string) {
+function escapeHtml(string) {
     return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap(s) {
         return entityMap[s];
     });

@@ -97,7 +97,7 @@
       setDynamicTextarea();
       $("#recipeForm").on("submit", function (event) {
         event.preventDefault();
-        var recipeJSON = formToJSON();
+        const recipeJSON = formToJSON();
         downloadJSON(recipeJSON);
       });
     });
@@ -107,16 +107,16 @@
       const recipeData = {
         recipe: {
           file_name: self.crypto.randomUUID(),
-          title: $("#title").val(),
-          author: $("#author").val().split("\s").filter(item => item !== ""),
-          description: $("#description").val(),
-          prep_time: $("#prep_time").val(),
-          cook_time: $("#cook_time").val(),
-          total_time: $("#total_time").val(),
-          servings: $("#servings").val(),
-          ingredients: $("#ingredients").val().split("\n"), //.filter(item => item !== ""),
-          instructions: $("#instructions").val().split("\n"), //.filter(item => item !== ""),
-          tags: $("#tags").val().split(/\s+/).filter(item => item !== ""),
+          title: DOMPurify.sanitize($("#title").val()),
+          author: DOMPurify.sanitize($("#author").val()).split(/\s+/).filter(item => item !== ""),
+          description: DOMPurify.sanitize($("#description").val()),
+          prep_time: DOMPurify.sanitize($("#prep_time").val()),
+          cook_time: DOMPurify.sanitize($("#cook_time").val()),
+          total_time: DOMPurify.sanitize($("#total_time").val()),
+          servings: DOMPurify.sanitize($("#servings").val()),
+          ingredients: DOMPurify.sanitize($("#ingredients").val().replace(/\n+$/, '')).split("\n"), //.filter(item => item !== ""),
+          instructions: DOMPurify.sanitize($("#instructions").val().replace(/\n+$/, '')).split("\n"), //.filter(item => item !== ""),
+          tags: DOMPurify.sanitize($("#tags").val()).split(/\s+/).filter(item => item !== ""),
           date_created: new Date().toUTCString()
         }
       };
@@ -124,22 +124,23 @@
     }
     // Download Recipe as json locally.
     function downloadJSON(content) {
-      const link = document.createElement("a");
-      const Sanitize = DOMPurify.sanitize(JSON.stringify(content, null, 2));
-      const blob = new Blob([Sanitize], { type: "application/json" });
+      if (!content.recipe.title || !content.recipe.ingredients.length) { return }
 
+      const blob = new Blob([JSON.stringify(content, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = content.recipe.file_name; // file name
 
       link.click();
       link.remove();
     }
+
     function setDynamicTextarea() {
       const textareas = $(".dynamic-textarea");
       // Reset and set new height to adjust content dynamically
       textareas.on("input", function () {
         this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 'px';
+        this.style.height = `${this.scrollHeight}px`;
       });
       textareas.each(function () {
         // this.setAttribute("rows", 1); // Disabled: Force textarea to only 1 line of height when only 1 line of text

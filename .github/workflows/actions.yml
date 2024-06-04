@@ -24,4 +24,4 @@ jobs:
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update JSON index
+          commit_message: Github Action - Update JSON index
