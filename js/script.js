@@ -109,13 +109,14 @@ $(document).ready(function () {
         $("#recipe-total-time").text(recipe.total_time);
         $("#recipe-servings").text(recipe.servings);
 
+        // DOM S
         const ingredientsList = recipe.ingredients.map(ingredient =>
-            `<li>${ingredient.quantity ? `${ingredient.quantity} ${ingredient.scale} ${ingredient.name}` : ingredient}</li>`
-        ).join('');
-        $("#recipe-ingredients").html(DOMPurify.sanitize(ingredientsList));
+            $("<li>").text(ingredient.quantity ? `${ingredient.quantity} ${ingredient.scale} ${ingredient.name}` : ingredient)
+        );
+        $("#recipe-ingredients").html(ingredientsList);
 
-        const instructionsList = recipe.instructions.map(instruction => `<li>${instruction}</li>`).join('');
-        $("#recipe-instructions").html(DOMPurify.sanitize(instructionsList));
+        const instructionsList = recipe.instructions.map(instruction => $("<li>").text(instruction));
+        $("#recipe-instructions").html(instructionsList);
     }
 
     function filterRecipes() {
@@ -124,8 +125,6 @@ $(document).ready(function () {
 
         $('#all-recipe-container .recipe').each(function () {
             const itemName = $(this).find(".card-title").text().toLowerCase();
-            // const itemName = $(this).attr('data-item').toLowerCase();
-            // const itemAuthors = $(this).attr('data-authors').toLowerCase();
 
             const matches = keywords.every(keyword => itemName.includes(keyword)); // Check if all keywords are present in title or author
             $(this).toggle(matches);
