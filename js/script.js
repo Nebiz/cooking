@@ -91,10 +91,10 @@ $(document).ready(function () {
 
         recipeList.forEach(recipe => {
             const newItem = template.clone();
-            newItem.attr('data-item', DOMPurify.sanitize(recipe.file_name));
-            newItem.find(".card-title").text(DOMPurify.sanitize(recipe.title)).append(`<span class="fst-italic text-secondary fs-6"></span>`);
-            newItem.find(".card-title span").text(` by ${DOMPurify.sanitize(recipe.author.join(", "))}`);
-            newItem.find(".card-text").text(DOMPurify.sanitize(recipe.description));
+            newItem.attr('data-item', recipe.file_name);
+            newItem.find(".card-title").text(recipe.title).append(`<span class="fst-italic text-secondary fs-6"></span>`);
+            newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
+            newItem.find(".card-text").text(recipe.description);
             $("#all-recipe-container").append(newItem);
         });
     }
