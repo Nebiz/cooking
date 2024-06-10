@@ -97,15 +97,10 @@ $(document).ready(function () {
             newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
             newItem.find(".card-text").text(recipe.description);
             
-            if(recipe.image_url !== undefined){
+            if(recipe.image_url !== undefined && recipe.image_url.length){
                 newItem.find("img").show();
                 const imageURL = DOMPurify.sanitize(recipe.image_url);
-
-                if(imageURL.length){
-                    newItem.find("img").attr('src', imageURL + "?h=400");
-                } else{
-                    newItem.find("img").attr('src', "img/pexels-ash-122861-376464.jpg");
-                }
+                newItem.find("img").attr('src', imageURL + "?h=400");
             }
             
             $("#all-recipe-container").append(newItem);
