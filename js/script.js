@@ -81,6 +81,7 @@ $(document).ready(function () {
             title: json.recipe.title,
             description: json.recipe.description,
             author: json.recipe.author,
+            image_url: json.recipe.image_url,
             date_created: json.recipe.date_created
         }));
     }
@@ -95,6 +96,18 @@ $(document).ready(function () {
             newItem.find(".card-title").text(recipe.title).append(`<span class="fst-italic text-secondary fs-6"></span>`);
             newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
             newItem.find(".card-text").text(recipe.description);
+            
+            if(recipe.image_url !== undefined){
+                newItem.find("img").show();
+                const imageURL = DOMPurify.sanitize(recipe.image_url);
+
+                if(imageURL.length){
+                    newItem.find("img").attr('src', imageURL + "?h=400");
+                } else{
+                    newItem.find("img").attr('src', "img/pexels-ash-122861-376464.jpg");
+                }
+            }
+            
             $("#all-recipe-container").append(newItem);
         });
     }
@@ -167,6 +180,7 @@ var entityMap = {
     '=': '&#x3D;'
 };
 
+// No encoding: innerHTML; Encoding: textContent or innerText;
 function escapeHtml(string) {
     return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap(s) {
         return entityMap[s];
