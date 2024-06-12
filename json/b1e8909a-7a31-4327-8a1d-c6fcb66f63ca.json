@@ -1,0 +1,33 @@
+{
+  "recipe": {
+    "file_name": "b1e8909a-7a31-4327-8a1d-c6fcb66f63ca",
+    "title": "Fudge au chocolat ",
+    "author": [
+      "Elora"
+    ],
+    "description": "Le fudge au chocolat le plus rapide à faire ( prêt en 3 minutes!)",
+    "prep_time": "3 min",
+    "cook_time": "1h",
+    "total_time": "1h03",
+    "servings": "",
+    "ingredients": [
+      "1 canne de lait condensé sucré style Eagle Brand (300ml)",
+      "",
+      "2 tasses (500ml) de petite de chocolat semi sucre",
+      "",
+      "1 cuillères à thé d’extrait de vanille "
+    ],
+    "instructions": [
+      "Prendre",
+      "Dans un bol",
+      "Ajouter",
+      "Versée",
+      "Transférer "
+    ],
+    "tags": [
+      "Fugde",
+      "chocolat"
+    ],
+    "date_created": "Wed, 12 Jun 2024 05:20:11 GMT"
+  }
+}
