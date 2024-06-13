@@ -96,11 +96,10 @@ $(document).ready(function () {
             newItem.find(".card-title").text(recipe.title).append(`<span class="fst-italic text-secondary fs-6"></span>`);
             newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
             newItem.find(".card-text").text(recipe.description);
-            
-            if(recipe.image_url !== undefined && recipe.image_url.length){
-                newItem.find("img").show();
+
+            if(recipe.image_url){
                 const imageURL = DOMPurify.sanitize(recipe.image_url);
-                newItem.find("img").attr('src', imageURL + "?h=400");
+                newItem.find("img").attr('src', imageURL + "?h=400").show();
             }
             
             $("#all-recipe-container").append(newItem);
@@ -129,7 +128,7 @@ $(document).ready(function () {
 
     function filterRecipes() {
         const input = $('#searchInput').val().toLowerCase();
-        const keywords = input.split(' ').filter(keyword => keyword); // Filter: remove empty strings
+        const keywords = input.split(' ').filter(keyword => keyword);
 
         $('#all-recipe-container .recipe').each(function () {
             const itemName = $(this).find(".card-title").text().toLowerCase();

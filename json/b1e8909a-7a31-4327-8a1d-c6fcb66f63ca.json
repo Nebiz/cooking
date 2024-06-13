@@ -1,32 +1,32 @@
 {
   "recipe": {
     "file_name": "b1e8909a-7a31-4327-8a1d-c6fcb66f63ca",
-    "title": "Fudge au chocolat ",
+    "title": "Fudge au chocolat",
     "author": [
       "Elora"
     ],
-    "description": "Le fudge au chocolat le plus rapide à faire ( prêt en 3 minutes!)",
+    "description": "Le fudge au chocolat le plus rapide à faire ( prêt en 3 minutes! )",
     "prep_time": "3 min",
     "cook_time": "1h",
     "total_time": "1h03",
-    "servings": "",
+    "servings": "5",
     "ingredients": [
       "1 canne de lait condensé sucré style Eagle Brand (300ml)",
       "",
-      "2 tasses (500ml) de petite de chocolat semi sucre",
+      "2 tasses (500ml) de pépites de chocolat semi-sucré",
       "",
-      "1 cuillères à thé d’extrait de vanille "
+      "1 cuillère à thé d’extrait de vanille"
     ],
     "instructions": [
-      "Prendre",
-      "Dans un bol",
-      "Ajouter",
-      "Versée",
-      "Transférer "
+      "Prendre un plat pyrex carré, beurrez-le et ajouter un papier parchemin afin de sortir facilement le fudge.",
+      "Dans un bol allant au micro-ondes, verser la canne de lait condensé Eagle Brand ainsi que les pépites de chocolat. Faites chauffer pendant 1 minute à HIGH. Mélangez, et faites chauffer pendant un autre trente secondes.",
+      "Ajouter la vanille et mélanger.",
+      "Verser dans le plat pyrex. Couvrir et mettre au réfrigérateur pendant 1 heure.",
+      "Transférer dans un plat hermétique pour une meilleure conservation."
     ],
     "tags": [
       "Fugde",
-      "chocolat"
+      "Chocolat"
     ],
     "date_created": "Wed, 12 Jun 2024 05:20:11 GMT"
   }
