@@ -4,7 +4,7 @@ $(document).ready(function () {
         var recipeList = getRecipeDisplayInfo(jsonObjects);
         showAllRecipes(recipeList);
         $('#searchInput').on("input", filterRecipes);
-        setRecipeViewEvents();
+        setOpenRecipeEvent();
         setReturnHome($('#LogoAndTitle'));
     });
 
@@ -124,6 +124,10 @@ $(document).ready(function () {
 
         const instructionsList = recipe.instructions.map(instruction => $("<li>").text(instruction));
         $("#recipe-instructions").html(instructionsList);
+
+        $("#modifyRecipe").on("click", () => {
+            window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
+        });
     }
 
     function filterRecipes() {
@@ -145,7 +149,7 @@ $(document).ready(function () {
         });
     }
 
-    function setRecipeViewEvents() {
+    function setOpenRecipeEvent() {
         $('#all-recipe-container').on("click", ".recipe", function () {
             const itemName = $(this).attr('data-item');
             $.getJSON(`json/${itemName}.json`, function (json) {
