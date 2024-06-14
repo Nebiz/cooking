@@ -33,3 +33,6 @@ body {
 .recipe {
   cursor: pointer;
 }
+textarea {
+  line-height: 2 !important;
+}

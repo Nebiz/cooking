@@ -28,7 +28,7 @@
     </div>
   </nav>
 
-  <div id="MainContent" class="container mb-2">
+  <div id="MainContent" class="container mb-5">
     <h1 class="fw-bold text-primary">Nouvelle Recette</h1><br>
     <form id="recipeForm" autocomplete="off">
       <input autocomplete="false" name="hidden" type="text" style="display:none;">
@@ -100,12 +100,37 @@
   <script>
     $(document).ready(function () {
       setDynamicTextarea();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("recipe")) {
+        $.getJSON(`json/${urlParams.get("recipe")}.json`, function (json) {
+          jsonToForm(json);
+        });
+      }
+
       $("#recipeForm").on("submit", function (event) {
         event.preventDefault();
         const recipeJSON = formToJSON();
         downloadJSON(recipeJSON);
       });
     });
+
+    function jsonToForm(jsonObj) {
+      const { recipe } = jsonObj;
+      $("#title").val(recipe.title);
+      $("#author").val(recipe.author.join(" ")).trigger("input");
+      $("#description").val(recipe.description).trigger("input");
+      $("#prep_time").val(recipe.prep_time);
+      $("#cook_time").val(recipe.cook_time);
+      $("#total_time").val(recipe.total_time);
+      $("#servings").val(recipe.servings);
+      $("#ingredients").val(recipe.ingredients.map(ingredient =>
+        ingredient.quantity ? `${ingredient.quantity} ${ingredient.scale} ${ingredient.name}` : ingredient
+      ).join("\n")).trigger("input");
+      $("#instructions").val(recipe.instructions.join("\n")).trigger("input");
+      $("#tags").val(recipe.tags.join(" ")).trigger("input");
+      $("#image_url").val(recipe.image_url);
+    }
 
     // Parsa data from the from into JSON obj.
     function formToJSON() {
@@ -145,12 +170,12 @@
       const textareas = $(".dynamic-textarea");
       // Reset and set new height to adjust content dynamically
       textareas.on("input", function () {
-        this.style.height = 'auto';
-        this.style.height = `${this.scrollHeight}px`;
+        $(this).css('height', 'auto');
+        $(this).css('height', `${this.scrollHeight}px`);
       });
       textareas.each(function () {
-        // this.setAttribute("rows", 1); // Disabled: Force textarea to only 1 line of height when only 1 line of text
-        this.style.overflow = "hidden"; // hide scrollbar
+        this.setAttribute("rows", 1); // Force textarea to only 1 line of height when only 1 line of text
+        this.style.overflow = "hidden"; // Hide scrollbar
       });
     }
 
