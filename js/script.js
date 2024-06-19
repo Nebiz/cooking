@@ -97,11 +97,11 @@ $(document).ready(function () {
             newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
             newItem.find(".card-text").text(recipe.description);
 
-            if(recipe.image_url){
+            if (recipe.image_url) {
                 const imageURL = DOMPurify.sanitize(recipe.image_url);
                 newItem.find("img").attr('src', imageURL + "?h=400").show();
             }
-            
+
             $("#all-recipe-container").append(newItem);
         });
     }
@@ -166,15 +166,15 @@ $(document).ready(function () {
         });
     }
 
-    function toggleRecipeView(){
+    function toggleRecipeView() {
         $("#search-container").toggle();
         $("#recipe-container").toggle();
     }
 
     // Add an entry to the history stack
     history.pushState(null, null, location.href);
-    $(window).on('popstate', function(event) {
-        if($("#recipe-container").is(":visible")) {
+    $(window).on('popstate', function (event) {
+        if ($("#recipe-container").is(":visible")) {
             // Prevent default back navigation
             history.pushState(null, null, location.href);
 
@@ -182,7 +182,7 @@ $(document).ready(function () {
             $("#searchInput").focus();
         }
     });
-    
+
 });
 
 var entityMap = {
