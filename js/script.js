@@ -161,10 +161,28 @@ $(document).ready(function () {
 
         // Not used for now: Close current recipe view, set on back arrow icon
         $("#goback-btn").on("click", function () {
-            $("#search-container").show();
             $("#recipe-container").hide();
+            $("#search-container").show();
         });
     }
+
+    function toggleRecipeView(){
+        $("#search-container").toggle();
+        $("#recipe-container").toggle();
+    }
+
+    // Add an entry to the history stack
+    history.pushState(null, null, location.href);
+    $(window).on('popstate', function(event) {
+        if($("#recipe-container").is(":visible")) {
+            // Prevent default back navigation
+            history.pushState(null, null, location.href);
+
+            toggleRecipeView();
+            $("#searchInput").focus();
+        }
+    });
+    
 });
 
 var entityMap = {
