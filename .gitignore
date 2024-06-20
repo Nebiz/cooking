@@ -2,3 +2,6 @@
 /test
 index.json
 json/localTest.json
+
+# Dependency directories
+node_modules/
