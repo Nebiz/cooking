@@ -112,6 +112,7 @@
         event.preventDefault();
         const recipeJSON = formToJSON();
         downloadJSON(recipeJSON);
+        sendRecipeToServer(recipeJSON);
       });
     });
 
@@ -164,6 +165,10 @@
 
       link.click();
       link.remove();
+    }
+
+    function sendRecipeToServer(content) {
+      $.post("https://worker1.nebiz-tech.workers.dev", JSON.stringify(content));
     }
 
     function setDynamicTextarea() {
