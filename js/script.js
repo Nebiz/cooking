@@ -1,10 +1,7 @@
 $(document).ready(function () {
-    fetchAllJsonFiles("json/", function (jsonObjects) {
-        var recipeList = getRecipeDisplayInfo(jsonObjects);
-        showAllRecipes(recipeList);
-        $('#searchInput').on("input", filterRecipes);
-        setOpenRecipeEvent();
-        setReturnHome($('#LogoAndTitle'));
+    fetchAllJsonFiles(function (jsonObjects) {
+        showAllRecipes(jsonObjects);
+        setWebpageEvents();
     });
 
     function sanitizeJsonObjects(jsonObjects) {
@@ -30,11 +27,11 @@ $(document).ready(function () {
         }
     }
 
-    function fetchAllJsonFiles(folderPath, callback) {
+    function fetchAllJsonFiles(callback) {
         const isLocal = window.location.hostname === '127.0.0.1';
         if (isLocal) {
             $.ajax({
-                url: folderPath,
+                url: "json/",
                 success: function (data) {
                     const jsonFiles = $(data).find("a:contains('.json')").not("a:contains('index.json')");
                     let jsonObjects = [];
@@ -46,7 +43,7 @@ $(document).ready(function () {
                     // console.log(myArray);
 
                     jsonFiles.each(function () {
-                        const fullPath = `${folderPath}${$(this).attr("href").split('/').pop()}`;
+                        const fullPath = `json/${$(this).attr("href").split('/').pop()}`;
                         $.getJSON(fullPath, function (jsonData) {
                             jsonObjects.push(jsonData);
                             filesProcessed++;
@@ -57,14 +54,14 @@ $(document).ready(function () {
                     });
                 }
             });
-        } else if(window.location.hostname === 'recette.pages.dev') {
+        } else if (window.location.hostname === 'recette.pages.dev') {
             $.ajax({
                 url: "https://worker1.nebiz-tech.workers.dev",
                 success: function (data) {
                     callback(sanitizeJsonObjects(JSON.parse(data).data));
                 }
             });
-        } else {
+        } else if (window.location.hostname === 'nebiz.github.io') {
             let jsonObjects = [];
             let filesProcessed = 0;
             $.getJSON("index.json", function (jsonList) {
@@ -81,23 +78,14 @@ $(document).ready(function () {
         }
     }
 
-    function getRecipeDisplayInfo(jsonObjects) {
-        return jsonObjects.map(json => ({
-            file_name: json.recipe.file_name,
-            title: json.recipe.title,
-            description: json.recipe.description,
-            author: json.recipe.author,
-            image_url: json.recipe.image_url,
-            date_created: json.recipe.date_created
-        }));
-    }
-
     function showAllRecipes(recipeList) {
-        recipeList.sort((a, b) => new Date(a.date_created) - new Date(b.date_created));
+        recipeList.sort((a, b) => new Date(a.recipe.date_created) - new Date(b.recipe.date_created));
         const template = $($("#template-recipe-preview").html());
 
-        recipeList.forEach(recipe => {
+        recipeList.forEach(recipeData => {
+            const recipe = recipeData.recipe;
             const newItem = template.clone();
+
             newItem.attr('data-item', recipe.file_name);
             newItem.find(".card-title").text(recipe.title).append(`<span class="fst-italic text-secondary fs-6"></span>`);
             newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
@@ -108,11 +96,16 @@ $(document).ready(function () {
                 newItem.find("img").attr('src', imageURL + "?h=400").show();
             }
 
+            newItem.on("click", function () {
+                setSelectedRecipe(recipeData);
+                toggleRecipeView();
+            });
+
             $("#all-recipe-container").append(newItem);
         });
     }
 
-    function showSelectedRecipe(jsonObj) {
+    function setSelectedRecipe(jsonObj) {
         const { recipe } = jsonObj;
         $("#recipe-title").text(recipe.title);
         $("#recipe-author").text(`By: ${recipe.author.join(", ")}`);
@@ -136,6 +129,24 @@ $(document).ready(function () {
         });
     }
 
+    function setWebpageEvents() {
+        setReturnHome($('#LogoAndTitle'));
+        $('#searchInput').on("input", filterRecipes); // Setup Search Filter
+        setPreviousButtonAction();
+    }
+
+    function setReturnHome(htmlElement) {
+        htmlElement.on("click", function () {
+            $("#recipe-container").hide();
+            $("#search-container").show();
+        });
+    }
+
+    function toggleRecipeView() {
+        $("#search-container").toggle();
+        $("#recipe-container").toggle();
+    }
+
     function filterRecipes() {
         const input = $('#searchInput').val().toLowerCase();
         const keywords = input.split(' ').filter(keyword => keyword);
@@ -148,46 +159,19 @@ $(document).ready(function () {
         });
     }
 
-    function setReturnHome(htmlElement) {
-        htmlElement.on("click", function () {
-            $("#recipe-container").hide();
-            $("#search-container").show();
+    function setPreviousButtonAction() {
+        // Add an entry to the history stack
+        history.pushState(null, null, location.href);
+        $(window).on('popstate', function (event) {
+            if ($("#recipe-container").is(":visible")) {
+                // Prevent default back navigation
+                history.pushState(null, null, location.href);
+
+                toggleRecipeView();
+                $("#searchInput").focus();
+            }
         });
     }
-
-    function setOpenRecipeEvent() {
-        $('#all-recipe-container').on("click", ".recipe", function () {
-            const itemName = $(this).attr('data-item');
-            $.getJSON(`json/${itemName}.json`, function (json) {
-                $("#search-container").hide();
-                $("#recipe-container").show();
-                showSelectedRecipe(sanitizeJsonObject(json));
-            });
-        });
-
-        // Not used for now: Close current recipe view, set on back arrow icon
-        $("#goback-btn").on("click", function () {
-            $("#recipe-container").hide();
-            $("#search-container").show();
-        });
-    }
-
-    function toggleRecipeView() {
-        $("#search-container").toggle();
-        $("#recipe-container").toggle();
-    }
-
-    // Add an entry to the history stack
-    history.pushState(null, null, location.href);
-    $(window).on('popstate', function (event) {
-        if ($("#recipe-container").is(":visible")) {
-            // Prevent default back navigation
-            history.pushState(null, null, location.href);
-
-            toggleRecipeView();
-            $("#searchInput").focus();
-        }
-    });
 
 });
 
