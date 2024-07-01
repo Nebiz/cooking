@@ -1,4 +1,3 @@
-// Sanitize when you get all the json files
 $(document).ready(function () {
     fetchAllJsonFiles("json/", function (jsonObjects) {
         var recipeList = getRecipeDisplayInfo(jsonObjects);
@@ -56,6 +55,13 @@ $(document).ready(function () {
                             }
                         });
                     });
+                }
+            });
+        } else if(window.location.hostname === 'recette.pages.dev') {
+            $.ajax({
+                url: "https://worker1.nebiz-tech.workers.dev",
+                success: function (data) {
+                    callback(sanitizeJsonObjects(JSON.parse(data).data));
                 }
             });
         } else {
