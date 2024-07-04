@@ -127,6 +127,27 @@ $(document).ready(function () {
         $("#modifyRecipe").on("click", () => {
             window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
         });
+
+        $("#deleteRecipe").on("click", () => {
+            deleteRecipe(recipe.file_name);
+        });
+    }
+
+    // Delete a recipe from the database.
+    function deleteRecipe(recipeGUID) {
+        $.ajax({
+            type: 'DELETE',
+            url: 'https://worker1.nebiz-tech.workers.dev',
+            data: recipeGUID,
+            success: function (response) {
+                console.log(response);
+                $($("#DataSuccess").html()).toast('show');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+                $($("#DataError").html()).toast('show');
+            }
+        });
     }
 
     function setWebpageEvents() {

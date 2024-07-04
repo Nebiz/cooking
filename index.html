@@ -76,6 +76,9 @@
     <button id="modifyRecipe" class="btn btn-outline-primary" type="button">
       <img src="img/modify.png" width="20" height="20" style="vertical-align: text-bottom;">
     </button>
+    <button id="deleteRecipe" class="btn btn-outline-primary" type="button">
+      <img src="img/delete.png" width="20" height="20" style="vertical-align: text-bottom;">
+    </button>
   </div>
 
   <!-- 1. Bootstrap JS Bundle with Popper && 2. Jquery-->
@@ -97,6 +100,18 @@
       </div>
     </div>
   </div>
+  </script>
+  <script type="text/template" id="DataSuccess">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header"><strong class="mr-auto">Notification</strong><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+      <div class="toast-body">Data submitted successfully!</div>
+    </div>
+  </script>
+  <script type="text/template" id="DataError">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header"><strong class="mr-auto">Error</strong><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+      <div class="toast-body">Error submitting data.</div>
+    </div>
   </script>
 </body>
 
