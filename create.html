@@ -111,7 +111,7 @@
       $("#recipeForm").on("submit", function (event) {
         event.preventDefault();
         const recipeJSON = formToJSON();
-        downloadJSON(recipeJSON);
+        // downloadJSON(recipeJSON);
         sendRecipeToServer(recipeJSON);
       });
     });
