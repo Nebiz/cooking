@@ -20,6 +20,8 @@ $(document).ready(function () {
             if (recipe.image_url) {
                 const imageURL = DOMPurify.sanitize(recipe.image_url);
                 newItem.find("img").attr('src', imageURL + "?h=400").show();
+            } else {
+                newItem.find("img").attr('src', "img/favicon.png").css("object-fit", "inherit").show();
             }
 
             newItem.on("click", function () {
