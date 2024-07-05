@@ -21,7 +21,10 @@
 }
 body {
   /* font-family: unset; */
-  background-color: rgb(213, 213, 255);
+  background-color: rgb(213, 213, 255) !important;
+}
+.mainContent {
+  max-width: 600px;
 }
 .recipe-container p {
   margin-bottom: 0;

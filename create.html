@@ -16,10 +16,9 @@
 </head>
 
 <body>
-
   <!-- 1. Navbar -->
   <nav class="navbar navbar-light">
-    <div class="container" style="max-width: 600px;">
+    <div class="container mainContent">
       <!-- Logo and Title -->
       <a class="navbar-brand" href="index.html">
         <img src="img/logo.png" alt="Logo">
@@ -28,7 +27,7 @@
     </div>
   </nav>
 
-  <div id="MainContent" class="container mb-5">
+  <div class="container mb-5 mainContent">
     <h1 class="fw-bold text-primary">Nouvelle Recette</h1><br>
     <form id="recipeForm" autocomplete="off">
       <input autocomplete="false" name="hidden" type="text" style="display:none;">
@@ -97,25 +96,32 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="js/server.js"></script>
   <script>
     $(document).ready(function () {
       setDynamicTextarea();
+      isUserModifyingRecipe();
+      setFormButtonActions();
+    });
 
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has("recipe")) {
-        $.getJSON(`json/${urlParams.get("recipe")}.json`, function (json) {
-          jsonToForm(json);
-        });
-      }
-
+    function setFormButtonActions() {
       $("#recipeForm").on("submit", function (event) {
         event.preventDefault();
         const recipeJSON = formToJSON();
-        // downloadJSON(recipeJSON);
         sendRecipeToServer(recipeJSON);
       });
-    });
+    }
 
+    function isUserModifyingRecipe() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("recipe")) {
+        // Get all recipe from server
+        // Get specific recipe from guid passed in url param
+        // jsonToForm(json);
+      }
+    }
+
+    // For modifying recipe, set selected recipe into form.
     function jsonToForm(jsonObj) {
       const { recipe } = jsonObj;
       $("#title").val(recipe.title);
@@ -133,7 +139,7 @@
       $("#image_url").val(recipe.image_url);
     }
 
-    // Parsa data from the from into JSON obj.
+    // Parse data from form into JSON obj.
     function formToJSON() {
       const recipeData = {
         recipe: {
@@ -154,22 +160,6 @@
       };
       return recipeData;
     }
-    // Download Recipe as json locally.
-    function downloadJSON(content) {
-      if (!content.recipe.title || !content.recipe.ingredients.length) { return }
-
-      const blob = new Blob([JSON.stringify(content, null, 2)], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = content.recipe.file_name; // file name
-
-      link.click();
-      link.remove();
-    }
-
-    function sendRecipeToServer(content) {
-      $.post("https://worker1.nebiz-tech.workers.dev", JSON.stringify(content));
-    }
 
     function setDynamicTextarea() {
       const textareas = $(".dynamic-textarea");
@@ -183,18 +173,7 @@
         this.style.overflow = "hidden"; // Hide scrollbar
       });
     }
-
   </script>
-
-  <style type="text/css">
-    #MainContent {
-      max-width: 600px;
-    }
-
-    body {
-      background-color: rgb(213, 213, 255);
-    }
-  </style>
 </body>
 
 </html>

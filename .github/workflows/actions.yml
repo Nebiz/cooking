@@ -1,9 +1,10 @@
 name: Update JSON Index - file listing all files in 'json' folder
 
 on:
-  push:
-    paths:
-      - 'json/**' # run only when changes in folder json
+  workflow_dispatch: # This makes the workflow manual trigger only
+  #push:
+    #paths:
+      #- 'json/**' # run only when changes in folder json
 
 jobs:
   update-json-index:

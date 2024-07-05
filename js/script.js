@@ -1,82 +1,8 @@
 $(document).ready(function () {
-    fetchAllJsonFiles(function (jsonObjects) {
+    getAllRecipe(function (jsonObjects) {
         showAllRecipes(jsonObjects);
         setWebpageEvents();
     });
-
-    function sanitizeJsonObjects(jsonObjects) {
-        return jsonObjects.map(jsonObject => sanitizeJsonObject(jsonObject));
-    }
-
-    function sanitizeJsonObject(obj) {
-        if (Array.isArray(obj)) {
-            return obj.map(item => sanitizeJsonObject(item));
-        } else if (typeof obj === 'object' && obj !== null) {
-            const sanitizedObj = {};
-            for (let key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    const sanitizedKey = DOMPurify.sanitize(key);
-                    sanitizedObj[sanitizedKey] = sanitizeJsonObject(obj[key]);
-                }
-            }
-            return sanitizedObj;
-        } else if (typeof obj === 'string') {
-            return DOMPurify.sanitize(obj);
-        } else {
-            return obj;
-        }
-    }
-
-    function fetchAllJsonFiles(callback) {
-        const isLocal = window.location.hostname === '127.0.0.1';
-        if (isLocal) {
-            $.ajax({
-                url: "json/",
-                success: function (data) {
-                    const jsonFiles = $(data).find("a:contains('.json')").not("a:contains('index.json')");
-                    let jsonObjects = [];
-                    let filesProcessed = 0;
-
-                    // const myArray = $(data).find("a:contains('.json')").map(function () {
-                    //     return $(this).attr("href").split('/').pop();
-                    // }).get();
-                    // console.log(myArray);
-
-                    jsonFiles.each(function () {
-                        const fullPath = `json/${$(this).attr("href").split('/').pop()}`;
-                        $.getJSON(fullPath, function (jsonData) {
-                            jsonObjects.push(jsonData);
-                            filesProcessed++;
-                            if (filesProcessed === jsonFiles.length) {
-                                callback(sanitizeJsonObjects(jsonObjects));
-                            }
-                        });
-                    });
-                }
-            });
-        } else if (window.location.hostname === 'recette.pages.dev') {
-            $.ajax({
-                url: "https://worker1.nebiz-tech.workers.dev",
-                success: function (data) {
-                    callback(sanitizeJsonObjects(JSON.parse(data).data));
-                }
-            });
-        } else if (window.location.hostname === 'nebiz.github.io') {
-            let jsonObjects = [];
-            let filesProcessed = 0;
-            $.getJSON("index.json", function (jsonList) {
-                jsonList.forEach(fileName => {
-                    $.getJSON(`json/${fileName}`, function (jsonData) {
-                        jsonObjects.push(jsonData);
-                        filesProcessed++;
-                        if (filesProcessed === jsonList.length) {
-                            callback(sanitizeJsonObjects(jsonObjects));
-                        }
-                    })
-                })
-            });
-        }
-    }
 
     function showAllRecipes(recipeList) {
         recipeList.sort((a, b) => new Date(a.recipe.date_created) - new Date(b.recipe.date_created));
@@ -125,28 +51,12 @@ $(document).ready(function () {
         $("#recipe-instructions").html(instructionsList);
 
         $("#modifyRecipe").on("click", () => {
-            window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
+            alert("Pas encore implémenté");
+            // window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
         });
 
         $("#deleteRecipe").on("click", () => {
             deleteRecipe(recipe.file_name);
-        });
-    }
-
-    // Delete a recipe from the database.
-    function deleteRecipe(recipeGUID) {
-        $.ajax({
-            type: 'DELETE',
-            url: 'https://worker1.nebiz-tech.workers.dev',
-            data: recipeGUID,
-            success: function (response) {
-                console.log(response);
-                $($("#DataSuccess").html()).toast('show');
-            },
-            error: function (xhr, status, error) {
-                console.log(xhr.responseText);
-                $($("#DataError").html()).toast('show');
-            }
         });
     }
 
@@ -180,6 +90,7 @@ $(document).ready(function () {
         });
     }
 
+    // Mobile device previous button, fixing workflow.
     function setPreviousButtonAction() {
         // Add an entry to the history stack
         history.pushState(null, null, location.href);
