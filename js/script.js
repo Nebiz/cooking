@@ -50,11 +50,13 @@ $(document).ready(function () {
         const instructionsList = recipe.instructions.map(instruction => $("<li>").text(instruction));
         $("#recipe-instructions").html(instructionsList);
 
+        $("#modifyRecipe").off('click'); // Prevent having multiple click event on the same button. This is bcz there's only 1 button.
         $("#modifyRecipe").on("click", () => {
             alert("Pas encore implémenté");
             // window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
         });
 
+        $("#deleteRecipe").off('click');
         $("#deleteRecipe").on("click", () => {
             deleteRecipe(recipe.file_name);
         });
