@@ -68,7 +68,7 @@ function deleteRecipe(recipeGUID) {
 
 // Get local admin cookie.
 function getLocalAuth() {
-    return Cookies.get('admin');
+    return Cookies.get('recette.auth');
 }
 
 function sanitizeJsonObjects(jsonObjects) {

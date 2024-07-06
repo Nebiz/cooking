@@ -111,7 +111,7 @@ $(document).ready(function () {
     }
 
     function setRecipeActionButton() {
-        if(!Cookies.get("admin")) { return; }
+        if(!Cookies.get("recette.auth")) { return; }
 
         const btnTemplate = $($("#btnTemplate").html());
 
