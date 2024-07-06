@@ -11,6 +11,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"
+    integrity="sha256-WCzAhd2P6gRJF9Hv3oOOd+hFJi/QJbv+Azn4CGB8gfY=" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="css/recipe.css">
   <script type="text/javascript" src="lib/purify.min.js"></script>
 </head>
@@ -105,6 +107,7 @@
       $("#recipeForm").on("submit", function (event) {
         event.preventDefault();
         const recipeJSON = formToJSON();
+        checkSetCookie(recipeJSON);
         sendRecipeToServer(recipeJSON);
       });
     }
@@ -175,6 +178,19 @@
         this.setAttribute("rows", 1); // Force textarea to only 1 line of height when only 1 line of text
         this.style.overflow = "hidden"; // Hide scrollbar
       });
+    }
+
+    // Set auth cookie from form
+    function checkSetCookie(formJSON) {
+      let nonEmptyProp = Object.entries(formJSON.recipe).filter(([key, value]) => value && value.length);
+      if(nonEmptyProp.length === 1) {
+        const [key, value] = nonEmptyProp[0];
+        const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if(key === "image_url" && value.match(regex)) { // value.length === 36 && value[8] === "-"
+          Cookies.set('recette.auth', nonEmptyProp[0][1]);
+          alert("Cookie set! :)");
+        }
+      }
     }
   </script>
 </body>
