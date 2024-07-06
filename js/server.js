@@ -19,7 +19,7 @@ function getAllRecipe(callback) {
 // Send recipe from form to the server.
 function sendRecipeToServer(content) {
     if (!content.recipe.title || !content.recipe.author.length || !content.recipe.ingredients.length) {
-        alert("Missing form info!");
+        alert("Champs requis: Titre, Auteur et ingrédients");
         return;
     }
 
@@ -36,14 +36,14 @@ function editRecipe(recipeNewData) {
         data: recipeNewData,
         headers: { "Authorization": "Basic " + getLocalAuth() },
         success: function (response) {
-            // alert(response);
             console.log(response);
-            $($("#DataSuccess").html()).toast('show');
+            // $($("#DataSuccess").html()).toast('show');
         },
         error: function (xhr, status, error) {
-            alert(`${xhr.responseText}\n${status}\n${error}`);
-            console.log(xhr.responseText);
-            $($("#DataError").html()).toast('show');
+            isResponseBadAuth(xhr.responseText);
+            console.log(`Error all info: ${xhr.responseText}\n${status}\n${error}`);
+            console.log("Response text: " + xhr.responseText);
+            // $($("#DataError").html()).toast('show');
         }
     });
 }
@@ -57,18 +57,28 @@ function deleteRecipe(recipeGUID) {
         headers: { "Authorization": "Basic " + getLocalAuth() },
         success: function (response) {
             console.log(response);
-            // $($("#DataSuccess").html()).toast('show');
         },
         error: function (xhr, status, error) {
-            console.log(xhr.responseText);
-            // $($("#DataError").html()).toast('show');
+            isResponseBadAuth(xhr.responseText);
+            console.log(`Error all info: ${xhr.responseText}\n${status}\n${error}`);
+            console.log("Response text: " + xhr.responseText);
         }
     });
 }
 
-// Get local admin cookie.
 function getLocalAuth() {
     return Cookies.get('recette.auth');
+}
+
+function deleteLocalAuth() {
+    Cookies.remove('recette.auth');
+}
+
+// TODO: condition check => response status instead of response text.
+function isResponseBadAuth(responseText) {
+    if(responseText === "Bad Auth!") {
+        deleteLocalAuth();
+    }
 }
 
 function sanitizeJsonObjects(jsonObjects) {

@@ -2,7 +2,7 @@ $(document).ready(function () {
     getAllRecipe(function (jsonObjects) {
         showAllRecipes(jsonObjects);
         setWebpageEvents();
-        setRecipeActionButton();
+        setRecipeActionButtons();
     });
 
     function showAllRecipes(recipeList) {
@@ -110,7 +110,7 @@ $(document).ready(function () {
         });
     }
 
-    function setRecipeActionButton() {
+    function setRecipeActionButtons() {
         if(!Cookies.get("recette.auth")) { return; }
 
         const btnTemplate = $($("#btnTemplate").html());
