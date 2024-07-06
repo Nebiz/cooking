@@ -2,6 +2,7 @@ $(document).ready(function () {
     getAllRecipe(function (jsonObjects) {
         showAllRecipes(jsonObjects);
         setWebpageEvents();
+        setRecipeActionButton();
     });
 
     function showAllRecipes(recipeList) {
@@ -21,7 +22,7 @@ $(document).ready(function () {
                 const imageURL = DOMPurify.sanitize(recipe.image_url);
                 newItem.find("img").attr('src', imageURL + "?h=400").show();
             } else {
-                newItem.find("img").attr('src', "img/favicon.png").css("object-fit", "inherit").show();
+                newItem.find("img").attr('src', "img/logo.png").css("object-fit", "inherit").show();
             }
 
             newItem.on("click", function () {
@@ -40,8 +41,8 @@ $(document).ready(function () {
         $("#recipe-description").text(recipe.description);
         $("#recipe-prep-time").text(recipe.prep_time);
         $("#recipe-cook-time").text(recipe.cook_time);
-        $("#recipe-total-time").text(recipe.total_time);
         $("#recipe-servings").text(recipe.servings);
+        $("#recipe-tags").text(recipe.tags.join(", "));
 
         // DOM S
         const ingredientsList = recipe.ingredients.map(ingredient =>
@@ -54,7 +55,7 @@ $(document).ready(function () {
 
         $("#modifyRecipe").off('click'); // Prevent having multiple click event on the same button. This is bcz there's only 1 button.
         $("#modifyRecipe").on("click", () => {
-            alert("Pas encore implémenté");
+            alert("Pas encore implémenté"); // TODO:
             // window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
         });
 
@@ -104,9 +105,24 @@ $(document).ready(function () {
                 history.pushState(null, null, location.href);
 
                 toggleRecipeView();
-                $("#searchInput").focus();
+                // $("#searchInput").focus();
             }
         });
+    }
+
+    function setRecipeActionButton() {
+        if(!Cookies.get("admin")) { return; }
+
+        const btnTemplate = $($("#btnTemplate").html());
+
+        // Edit Button
+        let editBtn = btnTemplate.clone();
+        editBtn.attr("id", "modifyRecipe").find("img").attr("src", "img/modify.png")
+        $("#recipe-container").append(editBtn);
+        // Delete Button
+        let deleteBtn = btnTemplate.clone();
+        deleteBtn.attr("id", "deleteRecipe").find("img").attr("src", "img/delete.png")
+        $("#recipe-container").append(deleteBtn);
     }
 
 });

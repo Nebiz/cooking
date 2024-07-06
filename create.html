@@ -28,7 +28,7 @@
   </nav>
 
   <div class="container mb-5 mainContent">
-    <h1 class="fw-bold text-primary">Nouvelle Recette</h1><br>
+    <h1 id="pageTitle" class="fw-bold text-primary">Nouvelle Recette</h1><br>
     <form id="recipeForm" autocomplete="off">
       <input autocomplete="false" name="hidden" type="text" style="display:none;">
 
@@ -48,20 +48,17 @@
         <label for="description">Description</label>
       </div>
 
-      <div class="form-floating mb-3">
-        <input type="text" id="prep_time" class="form-control" name="prep_time" placeholder="Temps de préparation">
-        <label for="prep_time">Temps de préparation</label>
-      </div>
+      <ul class="list-group list-group-horizontal d-flex">
+        <div class="form-floating mb-3">
+          <input type="text" id="prep_time" class="form-control" name="prep_time" placeholder="Temps de préparation">
+          <label for="prep_time">Temps de préparation</label>
+        </div>
 
-      <div class="form-floating mb-3">
-        <input type="text" id="cook_time" class="form-control" name="cook_time" placeholder="Temps de cuisson">
-        <label for="cook_time">Temps de cuisson</label>
-      </div>
-
-      <div class="form-floating mb-3">
-        <input type="text" id="total_time" class="form-control" name="total_time" placeholder="Temps total">
-        <label for="total_time">Temps total</label>
-      </div>
+        <div class="form-floating mb-3 ms-1">
+          <input type="text" id="cook_time" class="form-control" name="cook_time" placeholder="Temps de cuisson">
+          <label for="cook_time">Temps de cuisson</label>
+        </div>
+      </ul>
 
       <div class="form-floating mb-3">
         <input type="text" id="servings" class="form-control" name="servings" placeholder="Portions">
@@ -87,10 +84,10 @@
 
       <div class="form-floating mb-3">
         <input type="text" id="image_url" class="form-control" name="image_url" placeholder="Image URL">
-        <label for="image_url">Image URL</label>
+        <label for="image_url">Lien de l'image</label>
       </div>
 
-      <button type="submit" class="btn btn-primary">Créer</button>
+      <button id="submitBtn" type="submit" class="btn btn-primary">Créer</button>
     </form>
   </div>
 
@@ -114,10 +111,18 @@
 
     function isUserModifyingRecipe() {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has("recipe")) {
-        // Get all recipe from server
-        // Get specific recipe from guid passed in url param
-        // jsonToForm(json);
+      let recipeGUID = urlParams.get("recipe");
+      if (recipeGUID) {
+        getAllRecipe(function (jsonObjects) {
+          let selectedRecipe = jsonObjects.find(recipeData => recipeData.recipe.file_name === recipeGUID);
+          if (!selectedRecipe) {
+            alert("Bad recipe guid");
+            return;
+          }
+          jsonToForm(selectedRecipe);
+          $("#pageTitle").text("Modifier une recette");
+          $("#submitBtn").text("Modifier");
+        });
       }
     }
 
@@ -129,7 +134,6 @@
       $("#description").val(recipe.description).trigger("input");
       $("#prep_time").val(recipe.prep_time);
       $("#cook_time").val(recipe.cook_time);
-      $("#total_time").val(recipe.total_time);
       $("#servings").val(recipe.servings);
       $("#ingredients").val(recipe.ingredients.map(ingredient =>
         ingredient.quantity ? `${ingredient.quantity} ${ingredient.scale} ${ingredient.name}` : ingredient
@@ -149,7 +153,6 @@
           description: DOMPurify.sanitize($("#description").val()),
           prep_time: DOMPurify.sanitize($("#prep_time").val()),
           cook_time: DOMPurify.sanitize($("#cook_time").val()),
-          total_time: DOMPurify.sanitize($("#total_time").val()),
           servings: DOMPurify.sanitize($("#servings").val()),
           ingredients: DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
           instructions: DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
