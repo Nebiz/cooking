@@ -150,7 +150,6 @@
     function formToJSON() {
       const recipeData = {
         recipe: {
-          file_name: self.crypto.randomUUID(),
           title: DOMPurify.sanitize($("#title").val()),
           author: DOMPurify.sanitize($("#author").val()).split(/\s+/).filter(item => item !== ""),
           description: DOMPurify.sanitize($("#description").val()),
@@ -161,7 +160,6 @@
           instructions: DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
           tags: DOMPurify.sanitize($("#tags").val()).split(/\s+/).filter(item => item !== ""),
           image_url: DOMPurify.sanitize($("#image_url").val()),
-          date_created: new Date().toUTCString()
         }
       };
       return recipeData;
