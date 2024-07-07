@@ -68,20 +68,24 @@
       </div>
 
       <div class="form-floating mb-3">
-        <textarea id="ingredients" class="form-control dynamic-textarea" name="ingredients"
-          placeholder="Ingrédients"></textarea>
+        <ol id="ingredients" class="form-control dynamic-textarea ps-4 editable-list" name="ingredients"
+          placeholder="Ingrédients" contenteditable="true" spellcheck="true">
+          <li></li>
+        </ol>
         <label for="ingredients">Ingrédients</label>
       </div>
 
       <div class="form-floating mb-3">
-        <textarea id="instructions" class="form-control dynamic-textarea" name="instructions"
-          placeholder="Instructions"></textarea>
+        <ol id="instructions" class="form-control dynamic-textarea ps-4 editable-list" name="instructions"
+          placeholder="Instructions" contenteditable="true" spellcheck="true">
+          <li></li>
+        </ol>
         <label for="instructions">Instructions</label>
       </div>
 
       <div class="form-floating mb-3">
         <textarea id="tags" class="form-control dynamic-textarea" name="tags" placeholder="Tags"></textarea>
-        <label for="instructions">Tags</label>
+        <label for="tags">Tags</label>
       </div>
 
       <div class="form-floating mb-3">
@@ -99,6 +103,7 @@
   <script>
     $(document).ready(function () {
       setDynamicTextarea();
+      setUndeletableLiElement();
       isUserModifyingRecipe();
       setFormButtonActions();
     });
@@ -138,12 +143,20 @@
       $("#prep_time").val(recipe.prep_time);
       $("#cook_time").val(recipe.cook_time);
       $("#servings").val(recipe.servings);
-      $("#ingredients").val(recipe.ingredients.map(ingredient =>
-        ingredient.quantity ? `${ingredient.quantity} ${ingredient.scale} ${ingredient.name}` : ingredient
-      ).join("\n")).trigger("input");
-      $("#instructions").val(recipe.instructions.join("\n")).trigger("input");
       $("#tags").val(recipe.tags.join(" ")).trigger("input");
       $("#image_url").val(recipe.image_url);
+
+      // <ol> New logic
+      $('ol.editable-list').empty(); // remove the coded <li>
+      // Check if arrray is empty, if you, reinsert <li> element, so there's a count and can get the data correctly. TODO: maybe refactor
+      if (!recipe.ingredients.length) {
+        $("#ingredients").append($("<li>"));
+      }
+      if (!recipe.instructions.length) {
+        $("#instructions").append($("<li>"));
+      }
+      $("#ingredients").append(recipe.ingredients.map(ingredient => $("<li>").text(ingredient.quantity ? `${ingredient.quantity} ${ingredient.scale} ${ingredient.name}` : ingredient))).trigger("input");
+      $("#instructions").append(recipe.instructions.map(instruction => $("<li>").text(instruction))).trigger("input");
     }
 
     // Parse data from form into JSON obj.
@@ -156,8 +169,8 @@
           prep_time: DOMPurify.sanitize($("#prep_time").val()),
           cook_time: DOMPurify.sanitize($("#cook_time").val()),
           servings: DOMPurify.sanitize($("#servings").val()),
-          ingredients: DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
-          instructions: DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
+          ingredients: sanitizeJsonObjects($('#ingredients li').map(function () { return $(this).text(); }).get().filter(x => x)), // DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
+          instructions: sanitizeJsonObjects($('#instructions li').map((_, element) => $(element).text()).get().filter(x => x)), // DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
           tags: DOMPurify.sanitize($("#tags").val()).split(/\s+/).filter(item => item !== ""),
           image_url: DOMPurify.sanitize($("#image_url").val()),
         }
@@ -178,13 +191,24 @@
       });
     }
 
+    function setUndeletableLiElement() {
+      $('ol.editable-list').on('keydown', function (event) {
+        if (event.key === 'Backspace') {
+          var selection = window.getSelection();
+          if (selection.focusNode === $(this).find("li")[0] && selection.focusOffset === 0) {
+            event.preventDefault();
+          }
+        }
+      });
+    }
+
     // Set auth cookie from form
     function checkSetCookie(formJSON) {
       let nonEmptyProp = Object.entries(formJSON.recipe).filter(([key, value]) => value && value.length);
-      if(nonEmptyProp.length === 1) {
+      if (nonEmptyProp.length === 1) {
         const [key, value] = nonEmptyProp[0];
         const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        if(key === "image_url" && value.match(regex)) { // value.length === 36 && value[8] === "-"
+        if (key === "image_url" && value.match(regex)) { // match() replaced those: value.length === 36 && value[8] === "-"
           Cookies.set('recette.auth', nonEmptyProp[0][1]);
           alert("Cookie set! :)");
         }

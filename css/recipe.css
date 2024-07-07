@@ -39,3 +39,7 @@ body {
 textarea {
   line-height: 2 !important;
 }
+ol li {
+  line-height: 1.4 !important;
+  padding-bottom: 12px;
+}

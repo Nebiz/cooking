@@ -27,6 +27,7 @@ function sendRecipeToServer(content) {
         .done(data => { // (data, textStatus, jqXHR)
             alert("Nouvelle recette envoyée! :)"); // TODO: use bootstrap toast instead.
             $("#recipeForm").trigger('reset');
+            $(".editable-list").empty().append("<li>").trigger('input'); // Append li: so count doesnt disappear & getting data is working.
         })
         .fail(data => { // (jqXHR, textStatus, errorThrown)
             alert("Erreur pour nouvelle recette");
