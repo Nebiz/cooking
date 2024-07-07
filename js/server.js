@@ -23,9 +23,15 @@ function sendRecipeToServer(content) {
         return;
     }
 
-    $.post("https://worker1.nebiz-tech.workers.dev", JSON.stringify(content));
-    alert("Nouvelle recette envoyée! :)");
-    $("#recipeForm").trigger('reset');
+    $.post("https://worker1.nebiz-tech.workers.dev", JSON.stringify(content))
+        .done(data => { // (data, textStatus, jqXHR)
+            alert("Nouvelle recette envoyée! :)"); // TODO: use bootstrap toast instead.
+            $("#recipeForm").trigger('reset');
+        })
+        .fail(data => { // (jqXHR, textStatus, errorThrown)
+            alert("Erreur pour nouvelle recette");
+            console.log(`Some error happenned: ${data}`);
+        });
 }
 
 // Edit a recipe from the database.
@@ -76,7 +82,7 @@ function deleteLocalAuth() {
 
 // TODO: condition check => response status instead of response text.
 function isResponseBadAuth(responseText) {
-    if(responseText === "Bad Auth!") {
+    if (responseText === "Bad Auth!") {
         deleteLocalAuth();
     }
 }
