@@ -1,4 +1,5 @@
 let localSwitch = false;
+let workerUrl = "https://worker1.nebiz-tech.workers.dev";
 
 // Return array of all recipes from server.
 function getAllRecipe(callback) {
@@ -6,24 +7,25 @@ function getAllRecipe(callback) {
         $.getJSON("test/kv_db3_string.json", (localData) => {
             $.getJSON("test/localTest.json", (testData) => {
                 localData.data.push(testData);
-                callback(sanitizeJsonObjects(localData.data));
+                callback(sanitizeObj(localData.data));
             });
         });
     } else {
-        $.getJSON("https://worker1.nebiz-tech.workers.dev", (serverData) => {
-            callback(sanitizeJsonObjects(serverData.data));
+        $.getJSON(workerUrl, (serverData) => {
+            callback(sanitizeObj(serverData.data));
         });
     }
 }
 
 // Send recipe from form to the server.
 function sendRecipeToServer(content) {
-    if (!content.recipe.title || !content.recipe.author.length || !content.recipe.ingredients.length) {
-        alert("Champs requis: Titre, Auteur et ingrédients");
+    let recipe = sanitizeObj(content);
+    if (!recipe.recipe.title || !recipe.recipe.author.length || !recipe.recipe.ingredients.length) {
+        alert("Champs requis: Titre, Auteur et Ingrédients");
         return;
     }
 
-    $.post("https://worker1.nebiz-tech.workers.dev", JSON.stringify(content))
+    $.post(workerUrl, JSON.stringify(recipe))
         .done(data => { // (data, textStatus, jqXHR)
             alert("Nouvelle recette envoyée! :)"); // TODO: use bootstrap toast instead.
             $("#recipeForm").trigger('reset');
@@ -36,71 +38,63 @@ function sendRecipeToServer(content) {
 }
 
 // Edit a recipe from the database.
-function editRecipe(recipeNewData) {
+function editRecipe(newRecipeData) {
+    let recipe = sanitizeObj(newRecipeData);
+    ajaxRequest('PATCH', recipe);
+}
+
+// Delete a recipe from the database.
+function deleteRecipe(recipe) {
+    ajaxRequest('DELETE', recipe.file_name);
+}
+
+function ajaxRequest(type, data) {
     $.ajax({
-        type: 'PATCH',
-        url: 'https://worker1.nebiz-tech.workers.dev',
-        data: recipeNewData,
+        type: type,
+        url: workerUrl,
+        data: data,
         headers: { "Authorization": "Basic " + getLocalAuth() },
         success: function (response) {
             console.log(response);
             // $($("#DataSuccess").html()).toast('show');
         },
         error: function (xhr, status, error) {
-            isResponseBadAuth(xhr.responseText);
-            console.log(`Error all info: ${xhr.responseText}\n${status}\n${error}`);
-            console.log("Response text: " + xhr.responseText);
+            delCookieOnBadAuth(xhr.responseText);
+            console.log(`Error - ResponseText: ${xhr.responseText}\nStatus: ${status}\nError: ${error}`);
             // $($("#DataError").html()).toast('show');
         }
     });
 }
 
-// Delete a recipe from the database.
-function deleteRecipe(recipeGUID) {
-    $.ajax({
-        type: 'DELETE',
-        url: 'https://worker1.nebiz-tech.workers.dev',
-        data: recipeGUID,
-        headers: { "Authorization": "Basic " + getLocalAuth() },
-        success: function (response) {
-            console.log(response);
-        },
-        error: function (xhr, status, error) {
-            isResponseBadAuth(xhr.responseText);
-            console.log(`Error all info: ${xhr.responseText}\n${status}\n${error}`);
-            console.log("Response text: " + xhr.responseText);
-        }
-    });
+const authCookieName = 'recette.auth';
+function getLocalAuth() {
+    return Cookies.get(authCookieName);
 }
 
-function getLocalAuth() {
-    return Cookies.get('recette.auth');
+function setLocalAuth(value) {
+    Cookies.set(authCookieName, value);
 }
 
 function deleteLocalAuth() {
-    Cookies.remove('recette.auth');
+    Cookies.remove(authCookieName);
 }
 
 // TODO: condition check => response status instead of response text.
-function isResponseBadAuth(responseText) {
+function delCookieOnBadAuth(responseText) {
     if (responseText === "Bad Auth!") {
         deleteLocalAuth();
     }
 }
 
-function sanitizeJsonObjects(jsonObjects) {
-    return jsonObjects.map(jsonObject => sanitizeJsonObject(jsonObject));
-}
-
-function sanitizeJsonObject(obj) {
+function sanitizeObj(obj) {
     if (Array.isArray(obj)) {
-        return obj.map(item => sanitizeJsonObject(item));
+        return obj.map(item => sanitizeObj(item));
     } else if (typeof obj === 'object' && obj !== null) {
         const sanitizedObj = {};
         for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
                 const sanitizedKey = DOMPurify.sanitize(key);
-                sanitizedObj[sanitizedKey] = sanitizeJsonObject(obj[key]);
+                sanitizedObj[sanitizedKey] = sanitizeObj(obj[key]);
             }
         }
         return sanitizedObj;

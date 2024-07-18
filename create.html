@@ -163,19 +163,19 @@
     function formToJSON() {
       const recipeData = {
         recipe: {
-          title: DOMPurify.sanitize($("#title").val()),
-          author: DOMPurify.sanitize($("#author").val()).split(/\s+/).filter(item => item !== ""),
-          description: DOMPurify.sanitize($("#description").val()),
-          prep_time: DOMPurify.sanitize($("#prep_time").val()),
-          cook_time: DOMPurify.sanitize($("#cook_time").val()),
-          servings: DOMPurify.sanitize($("#servings").val()),
-          ingredients: sanitizeJsonObjects($('#ingredients li').map(function () { return $(this).text(); }).get().filter(x => x)), // DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
-          instructions: sanitizeJsonObjects($('#instructions li').map((_, element) => $(element).text()).get().filter(x => x)), // DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
-          tags: DOMPurify.sanitize($("#tags").val()).split(/\s+/).filter(item => item !== ""),
-          image_url: DOMPurify.sanitize($("#image_url").val()),
+          title: $("#title").val(),
+          author: $("#author").val().split("\n").map(x => x.trim()).filter(x => x),
+          description: $("#description").val(),
+          prep_time: $("#prep_time").val(),
+          cook_time: $("#cook_time").val(),
+          servings: $("#servings").val(),
+          ingredients: $('#ingredients li').map(function () { return $(this).text(); }).get().filter(x => x), // DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
+          instructions: $('#instructions li').map((_, element) => $(element).text()).get().filter(x => x), // DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
+          tags: $("#tags").val().split(/\s+/).filter(x => x),
+          image_url: $("#image_url").val(),
         }
       };
-      return recipeData;
+      return sanitizeObj(recipeData);
     }
 
     function setDynamicTextarea() {
@@ -209,7 +209,7 @@
         const [key, value] = nonEmptyProp[0];
         const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         if (key === "image_url" && value.match(regex)) { // match() replaced those: value.length === 36 && value[8] === "-"
-          Cookies.set('recette.auth', nonEmptyProp[0][1]);
+          setLocalAuth(value);
           alert("Cookie set! :)");
         }
       }
