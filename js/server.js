@@ -40,7 +40,7 @@ function postRecipe(content) {
 // Edit a recipe from the database.
 function editRecipe(newRecipeData) {
     let recipe = sanitizeObj(newRecipeData);
-    ajaxRequest('PATCH', recipe);
+    ajaxRequest('PATCH', JSON.stringify(recipe));
 }
 
 // Delete a recipe from the database.
