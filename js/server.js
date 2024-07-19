@@ -18,7 +18,7 @@ function getAllRecipe(callback) {
 }
 
 // Send recipe from form to the server.
-function sendRecipeToServer(content) {
+function postRecipe(content) {
     let recipe = sanitizeObj(content);
     if (!recipe.recipe.title || !recipe.recipe.author.length || !recipe.recipe.ingredients.length) {
         alert("Champs requis: Titre, Auteur et Ingrédients");
@@ -56,6 +56,7 @@ function ajaxRequest(type, data) {
         headers: { "Authorization": "Basic " + getLocalAuth() },
         success: function (response) {
             console.log(response);
+            location.reload(); // QOL: auto reload page after server changes.
             // $($("#DataSuccess").html()).toast('show');
         },
         error: function (xhr, status, error) {

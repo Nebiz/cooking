@@ -33,6 +33,7 @@
     <h1 id="pageTitle" class="fw-bold text-primary">Nouvelle Recette</h1><br>
     <form id="recipeForm" autocomplete="off">
       <input autocomplete="false" name="hidden" type="text" style="display:none;">
+      <input type="hidden" id="recipeId" name="recipeId" style="display:none;">
 
       <div class="form-floating mb-3">
         <input type="text" id="title" class="form-control" name="title" placeholder="Titre">
@@ -111,15 +112,23 @@
     function setFormButtonActions() {
       $("#recipeForm").on("submit", function (event) {
         event.preventDefault();
-        const recipeJSON = formToJSON();
+        let recipeJSON = formToJSON();
         checkSetCookie(recipeJSON);
-        sendRecipeToServer(recipeJSON);
+
+        let recipeID = $("#recipeId").text();
+        if (recipeID.length) {
+          recipeJSON.recipe.file_name = recipeID;
+          editRecipe(recipeJSON);
+        } else {
+          postRecipe(recipeJSON);
+        }
       });
     }
 
     function isUserModifyingRecipe() {
       const urlParams = new URLSearchParams(window.location.search);
       let recipeGUID = urlParams.get("recipe");
+      window.history.replaceState(null, '', window.location.pathname); // removes param from url.
       if (recipeGUID) {
         getAllRecipe(function (jsonObjects) {
           let selectedRecipe = jsonObjects.find(recipeData => recipeData.recipe.file_name === recipeGUID);
@@ -128,6 +137,8 @@
             return;
           }
           jsonToForm(selectedRecipe);
+          $("#recipeId").text(recipeGUID); // set Id to retrieve when will send to server.
+
           $("#pageTitle").text("Modifier une recette");
           $("#submitBtn").text("Modifier");
         });

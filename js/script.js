@@ -55,8 +55,7 @@ $(document).ready(function () {
 
         $("#modifyRecipe").off('click'); // Remove all event attached to the singular button.
         $("#modifyRecipe").on("click", () => {
-            alert("Pas encore implémenté"); // TODO:
-            // window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
+            window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
         });
 
         $("#deleteRecipe").off('click');
