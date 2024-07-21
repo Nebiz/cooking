@@ -7,7 +7,7 @@ $(document).ready(function () {
 
     function showAllRecipes(recipeList) {
         recipeList.sort((a, b) => new Date(a.recipe.date_created) - new Date(b.recipe.date_created));
-        const template = $($("#template-recipe-preview").html());
+        const template = $($("#recipe-template").html());
 
         recipeList.forEach(recipeData => {
             const recipe = recipeData.recipe;

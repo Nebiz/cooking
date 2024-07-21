@@ -129,7 +129,7 @@
         getAllRecipe(function (jsonObjects) {
           let selectedRecipe = jsonObjects.find(recipeData => recipeData.recipe.file_name === recipeGUID);
           if (!selectedRecipe) {
-            alert("Bad recipe guid");
+            showToast("Bad recipe guid", false);
             return;
           }
           jsonToForm(selectedRecipe);
@@ -217,7 +217,7 @@
         const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         if (key === "image_url" && value.match(regex)) { // match() replaced those: value.length === 36 && value[8] === "-"
           setLocalAuth(value);
-          alert("Cookie set! :)");
+          showToast("Cookie set! :)", true);
         }
       }
     }

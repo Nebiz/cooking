@@ -40,7 +40,9 @@
       aria-label="Search" style="max-width: 500px">
 
     <!-- All Recipes -->
-    <div id="all-recipe-container" class="container row mt-4"></div>
+    <div class="container">
+      <div id="all-recipe-container" class="row mt-4"></div>
+    </div>
   </div>
 
   <!-- 3. Selected Recipe -->
@@ -72,7 +74,7 @@
     <div class="mb-3"><strong>Tags </strong><span id="recipe-tags" class="d-inline-block"></span></div>
   </div>
 
-  <script type="text/template" id="template-recipe-preview">
+  <script type="text/template" id="recipe-template">
   <!-- Item -->
   <div class="col-lg-4 col-md-6 mb-4 recipe" data-item="">
     <div class="card shadow-sm">
@@ -84,18 +86,7 @@
     </div>
   </div>
   </script>
-  <script type="text/template" id="DataSuccess">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header"><strong class="mr-auto">Notification</strong><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
-      <div class="toast-body">Data submitted successfully!</div>
-    </div>
-  </script>
-  <script type="text/template" id="DataError">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header"><strong class="mr-auto">Error</strong><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
-      <div class="toast-body">Error submitting data.</div>
-    </div>
-  </script>
+
   <script type="text/template" id="btnTemplate">
     <button id="" class="btn btn-outline-primary ms-1" type="button">
       <img src="" width="20" height="20" style="vertical-align: text-bottom;">

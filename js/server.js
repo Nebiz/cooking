@@ -21,26 +21,25 @@ function getAllRecipe(callback) {
 function postRecipe(content) {
     let recipe = sanitizeObj(content);
     if (!recipe.recipe.title || !recipe.recipe.author.length || !recipe.recipe.ingredients.length) {
-        alert("Champs requis: Titre, Auteur et Ingrédients");
+        showToast("Champs requis: Titre, Auteur et Ingrédients", false);
         return;
     }
 
     $.post(workerUrl, JSON.stringify(recipe))
         .done(data => { // (data, textStatus, jqXHR)
-            alert("Nouvelle recette envoyée! :)"); // TODO: use bootstrap toast instead.
+            showToast("Nouvelle recette envoyée! :)", true);
             $("#recipeForm").trigger('reset');
             $(".editable-list").empty().append("<li>").trigger('input'); // Append li: so count doesnt disappear & getting data is working.
         })
         .fail(data => { // (jqXHR, textStatus, errorThrown)
-            alert("Erreur pour nouvelle recette");
+            showToast("Erreur pour nouvelle recette", false);
             console.log(`Some error happenned: ${data}`);
         });
 }
 
 // Edit a recipe from the database.
 function editRecipe(newRecipeData) {
-    let recipe = sanitizeObj(newRecipeData);
-    ajaxRequest('PATCH', JSON.stringify(recipe));
+    ajaxRequest('PATCH', JSON.stringify(sanitizeObj(newRecipeData)));
 }
 
 // Delete a recipe from the database.
@@ -57,12 +56,12 @@ function ajaxRequest(type, data) {
         success: function (response) {
             console.log(response);
             location.reload(); // QOL: auto reload page after server changes.
-            // $($("#DataSuccess").html()).toast('show');
+            showToast(xhr.responseText, true);
         },
         error: function (xhr, status, error) {
             delCookieOnBadAuth(xhr.responseText);
-            console.log(`Error - ResponseText: ${xhr.responseText}\nStatus: ${status}\nError: ${error}`);
-            // $($("#DataError").html()).toast('show');
+            console.log(`Error:\nResponseText: ${xhr.responseText}\nStatus: ${status}\nError: ${error}`);
+            showToast(xhr.responseText, false);
         }
     });
 }
@@ -85,6 +84,28 @@ function delCookieOnBadAuth(responseText) {
     if (responseText === "Bad Auth!") {
         deleteLocalAuth();
     }
+}
+
+let toastInit = false;
+let toastElement =
+    $(`<div role="status" aria-live="polite" aria-atomic="true" class="toast position-fixed top-0 start-50 translate-middle p-1 mt-5 rounded-3">
+            <div class="toast-header">
+                <h5 id="toastText" class="mx-auto">Toast Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>`);
+function showToast(toastText, isSuccess) {
+    if (!toastInit) {
+        toastElement.appendTo(document.body);
+    }
+    toastInit = true;
+
+    toastElement.find("#toastText").text(toastText);
+    let bgColor = isSuccess ? "bg-success-subtle" : "bg-warning-subtle";
+    toastElement.addClass(bgColor).find(".toast-header").addClass(bgColor);
+
+    bootstrap.Toast.getOrCreateInstance(toastElement).show();
+    // new bootstrap.Toast(toastElement).show(); // Other method / Bootstrap's Toast API
 }
 
 function sanitizeObj(obj) {
