@@ -124,8 +124,10 @@
     function isUserModifyingRecipe() {
       const urlParams = new URLSearchParams(window.location.search);
       let recipeGUID = urlParams.get("recipe");
-      window.history.replaceState(null, '', window.location.pathname); // removes param from url.
       if (recipeGUID) {
+        window.history.replaceState(null, '', window.location.pathname); // removes param from url.
+        // TODO: remove from history the url with param.
+
         getAllRecipe(function (jsonObjects) {
           let selectedRecipe = jsonObjects.find(recipeData => recipeData.recipe.file_name === recipeGUID);
           if (!selectedRecipe) {
@@ -143,7 +145,7 @@
 
     // For modifying recipe, set selected recipe into form.
     function jsonToForm(jsonObj) {
-      const { recipe } = jsonObj;
+      const { recipe } = sanitizeObj(jsonObj); // destructuring assignment to extract the recipe property.
       $("#title").val(recipe.title);
       $("#author").val(recipe.author.join(" ")).trigger("input");
       $("#description").val(recipe.description).trigger("input");
@@ -200,9 +202,10 @@
 
     function setUndeletableLiElement() {
       $('ol.editable-list').on('keydown', function (event) {
+        // if (this.textContent.trim().length === 0 && event.key === "Backspace" && this.children.length === 1) { event.preventDefault(); } // other solution.
         if (event.key === 'Backspace') {
           var selection = window.getSelection();
-          if (selection.focusNode === $(this).find("li")[0] && selection.focusOffset === 0) {
+          if (selection.focusNode === this.children[0] && selection.focusOffset === 0) {
             event.preventDefault();
           }
         }

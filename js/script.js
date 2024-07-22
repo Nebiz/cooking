@@ -13,7 +13,6 @@ $(document).ready(function () {
             const recipe = recipeData.recipe;
             const newItem = template.clone();
 
-            newItem.attr('data-item', recipe.file_name);
             newItem.find(".card-title").text(recipe.title).append(`<span class="fst-italic text-secondary fs-6"></span>`);
             newItem.find(".card-title span").text(` by ${recipe.author.join(", ")}`);
             newItem.find(".card-text").text(recipe.description);
@@ -125,21 +124,3 @@ $(document).ready(function () {
     }
 
 });
-
-var entityMap = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '/': '&#x2F;',
-    '`': '&#x60;',
-    '=': '&#x3D;'
-};
-
-// No encoding: innerHTML; Encoding: textContent or innerText;
-function escapeHtml(string) {
-    return String(string).replace(/[&<>"'`=\/]/g, function fromEntityMap(s) {
-        return entityMap[s];
-    });
-}

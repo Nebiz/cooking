@@ -30,6 +30,7 @@ function postRecipe(content) {
             showToast("Nouvelle recette envoyée! :)", true);
             $("#recipeForm").trigger('reset');
             $(".editable-list").empty().append("<li>").trigger('input'); // Append li: so count doesnt disappear & getting data is working.
+            // TODO: Replace 2 above lines with: redirect user to new recipe view
         })
         .fail(data => { // (jqXHR, textStatus, errorThrown)
             showToast("Erreur pour nouvelle recette", false);
@@ -108,6 +109,7 @@ function showToast(toastText, isSuccess) {
     // new bootstrap.Toast(toastElement).show(); // Other method / Bootstrap's Toast API
 }
 
+// No encoding: innerHTML; Encoding: textContent or innerText;
 function sanitizeObj(obj) {
     if (Array.isArray(obj)) {
         return obj.map(item => sanitizeObj(item));

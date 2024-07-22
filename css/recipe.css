@@ -67,6 +67,6 @@ li::marker {
   color: rebeccapurple;
 }
 
-li [contenteditable='true'] {
-  background-color: #ffffff7c;
-}
+/*li [contenteditable='true'], ul [contenteditable='true'], ol [contenteditable='true'] {
+  background-color: darkseagreen;
+}*/
