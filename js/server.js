@@ -56,8 +56,8 @@ function ajaxRequest(type, data) {
         headers: { "Authorization": "Basic " + getLocalAuth() },
         success: function (response) {
             console.log(response);
+            showToast(response, true); // TODO: the toast is never shown because the page reload.
             location.reload(); // QOL: auto reload page after server changes.
-            showToast(xhr.responseText, true);
         },
         error: function (xhr, status, error) {
             delCookieOnBadAuth(xhr.responseText);
@@ -95,6 +95,7 @@ let toastElement =
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>`);
+// TODO: change position type because if you show 2 toast, only the 2nd one is shown. Also since there's only 1 instance, maybe can't shown 2 toast at the same time. Fix: always append the body with new toast. (Remove if() at beginning of function).
 function showToast(toastText, isSuccess) {
     if (!toastInit) {
         toastElement.appendTo(document.body);
