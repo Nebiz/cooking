@@ -7,13 +7,13 @@ function getAllRecipe(callback) {
     if (window.location.hostname === '127.0.0.1' && localSwitch) {
         $.getJSON("test/kvDB.json", (localData) => {
             $.getJSON("test/localTest.json", (testData) => {
-                localData.data.push(testData);
-                callback(sanitizeObj(localData.data));
+                localData.push(testData);
+                callback(sanitizeObj(localData));
             });
         });
     } else {
         $.getJSON(workerUrl, (serverData) => {
-            callback(sanitizeObj(serverData.data));
+            callback(sanitizeObj(serverData));
         });
     }
 }
@@ -21,7 +21,7 @@ function getAllRecipe(callback) {
 // Send recipe from form to the server.
 function postRecipe(content) {
     let recipe = sanitizeObj(content);
-    if (!recipe.recipe.title || !recipe.recipe.author.length || !recipe.recipe.ingredients.length) {
+    if (!recipe.title || !recipe.author.length || !recipe.ingredients.length) {
         showToast("Champs requis: Titre, Auteur et Ingrédients", false);
         return;
     }
@@ -46,7 +46,7 @@ function editRecipe(newRecipeData) {
 
 // Delete a recipe from the database.
 function deleteRecipe(recipe) {
-    ajaxRequest('DELETE', recipe.file_name);
+    ajaxRequest('DELETE', recipe._id);
 }
 
 function ajaxRequest(type, data) {
@@ -89,7 +89,7 @@ function delCookieOnBadAuth(responseText) {
 }
 
 let toastCount = 0;
-let toastOffset = index => 5 + (index * 70);
+let toastOffset = index => 5 + (index * 75);
 let toastElement =
     $(`<div role="status" aria-live="polite" aria-atomic="true" class="toast position-fixed start-50 translate-middle p-1 mt-5 rounded-3">
             <div class="toast-header">

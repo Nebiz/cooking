@@ -1,16 +1,15 @@
 $(document).ready(function () {
-    getAllRecipe(function (jsonObjects) {
-        showAllRecipes(jsonObjects);
+    getAllRecipe((arrayOfRecipe) => {
+        showAllRecipes(arrayOfRecipe);
         setWebpageEvents();
         setRecipeActionButtons();
     });
 
     function showAllRecipes(recipeList) {
-        recipeList.sort((a, b) => new Date(a.recipe.date_created) - new Date(b.recipe.date_created));
+        recipeList.sort((a, b) => new Date(a._date) - new Date(b._date));
         const template = $($("#recipe-template").html());
 
-        recipeList.forEach(recipeData => {
-            const recipe = recipeData.recipe;
+        recipeList.forEach(recipe => {
             const newItem = template.clone();
 
             newItem.find(".card-title").text(recipe.title).append(`<span class="fst-italic text-secondary fs-6"></span>`);
@@ -25,7 +24,7 @@ $(document).ready(function () {
             }
 
             newItem.on("click", function () {
-                setSelectedRecipe(recipeData);
+                setSelectedRecipe(recipe);
                 toggleRecipeView();
             });
 
@@ -33,8 +32,7 @@ $(document).ready(function () {
         });
     }
 
-    function setSelectedRecipe(jsonObj) {
-        const { recipe } = jsonObj;
+    function setSelectedRecipe(recipe) {
         $("#recipe-title").text(recipe.title);
         $("#recipe-author").text(`By: ${recipe.author.join(", ")}`);
         $("#recipe-description").text(recipe.description);
@@ -54,7 +52,7 @@ $(document).ready(function () {
 
         $("#modifyRecipe").off('click'); // Remove all event attached to the singular button.
         $("#modifyRecipe").on("click", () => {
-            window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe.file_name);
+            window.location = "create.html?recipe=" + DOMPurify.sanitize(recipe._id);
         });
 
         $("#deleteRecipe").off('click');

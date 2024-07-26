@@ -111,9 +111,9 @@
         let recipeJSON = formToJSON();
         checkSetCookie(recipeJSON);
 
-        let recipeID = $("#recipeId").text();
-        if (recipeID.length) {
-          recipeJSON.recipe.file_name = recipeID;
+        let recipeId = $("#recipeId").text();
+        if (recipeId.length) {
+          recipeJSON._id = recipeId;
           editRecipe(recipeJSON);
         } else {
           postRecipe(recipeJSON);
@@ -123,19 +123,19 @@
 
     function isUserModifyingRecipe() {
       const urlParams = new URLSearchParams(window.location.search);
-      let recipeGUID = urlParams.get("recipe");
-      if (recipeGUID) {
+      let recipeId = urlParams.get("recipe");
+      if (recipeId) {
         window.history.replaceState(null, '', window.location.pathname); // removes param from url.
         // TODO: remove from history the url with param.
 
-        getAllRecipe(function (jsonObjects) {
-          let selectedRecipe = jsonObjects.find(recipeData => recipeData.recipe.file_name === recipeGUID);
+        getAllRecipe((arrayOfRecipe) => {
+          let selectedRecipe = arrayOfRecipe.find(recipe => recipe._id === recipeId);
           if (!selectedRecipe) {
             showToast("Bad recipe guid", false);
             return;
           }
           jsonToForm(selectedRecipe);
-          $("#recipeId").text(recipeGUID); // set Id to retrieve when will send to server.
+          $("#recipeId").text(recipeId); // set Id to retrieve when will send to server.
 
           $("#pageTitle").text("Modifier une recette");
           $("#submitBtn").text("Modifier");
@@ -145,7 +145,7 @@
 
     // For modifying recipe, set selected recipe into form.
     function jsonToForm(jsonObj) {
-      const { recipe } = sanitizeObj(jsonObj); // destructuring assignment to extract the recipe property.
+      const recipe = sanitizeObj(jsonObj);
       $("#title").val(recipe.title);
       $("#author").val(recipe.author.join(" ")).trigger("input");
       $("#description").val(recipe.description).trigger("input");
@@ -171,18 +171,16 @@
     // Parse data from form into JSON obj.
     function formToJSON() {
       const recipeData = {
-        recipe: {
-          title: $("#title").val(),
-          author: $("#author").val().split("\n").map(x => x.trim()).filter(x => x),
-          description: $("#description").val(),
-          prep_time: $("#prep_time").val(),
-          cook_time: $("#cook_time").val(),
-          servings: $("#servings").val(),
-          ingredients: $('#ingredients li').map(function () { return $(this).text(); }).get().filter(x => x), // DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
-          instructions: $('#instructions li').map((_, element) => $(element).text()).get().filter(x => x), // DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
-          tags: $("#tags").val().split(/\s+/).filter(x => x),
-          image_url: $("#image_url").val(),
-        }
+        title: $("#title").val(),
+        author: $("#author").val().split("\n").map(x => x.trim()).filter(x => x),
+        description: $("#description").val(),
+        prep_time: $("#prep_time").val(),
+        cook_time: $("#cook_time").val(),
+        servings: $("#servings").val(),
+        ingredients: $('#ingredients li').map(function () { return $(this).text(); }).get().filter(x => x), // DOMPurify.sanitize($("#ingredients").val()).split("\n").filter(item => item !== ""),
+        instructions: $('#instructions li').map((_, element) => $(element).text()).get().filter(x => x), // DOMPurify.sanitize($("#instructions").val()).split("\n").filter(item => item !== ""),
+        tags: $("#tags").val().split(/\s+/).filter(x => x),
+        image_url: $("#image_url").val()
       };
       return sanitizeObj(recipeData);
     }
@@ -214,7 +212,7 @@
 
     // Set auth cookie from form
     function checkSetCookie(formJSON) {
-      let nonEmptyProp = Object.entries(formJSON.recipe).filter(([key, value]) => value && value.length);
+      let nonEmptyProp = Object.entries(formJSON).filter(([key, value]) => value && value.length);
       if (nonEmptyProp.length === 1) {
         const [key, value] = nonEmptyProp[0];
         const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
