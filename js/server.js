@@ -1,10 +1,11 @@
 let localSwitch = false;
 let workerUrl = "https://worker1.nebiz-tech.workers.dev";
+const l = obj => console.log(obj);
 
 // Return array of all recipes from server.
 function getAllRecipe(callback) {
     if (window.location.hostname === '127.0.0.1' && localSwitch) {
-        $.getJSON("test/kv_db3_string.json", (localData) => {
+        $.getJSON("test/kvDB.json", (localData) => {
             $.getJSON("test/localTest.json", (testData) => {
                 localData.data.push(testData);
                 callback(sanitizeObj(localData.data));
@@ -87,9 +88,10 @@ function delCookieOnBadAuth(responseText) {
     }
 }
 
-let toastInit = false;
+let toastCount = 0;
+let toastOffset = index => 5 + (index * 70);
 let toastElement =
-    $(`<div role="status" aria-live="polite" aria-atomic="true" class="toast position-fixed top-0 start-50 translate-middle p-1 mt-5 rounded-3">
+    $(`<div role="status" aria-live="polite" aria-atomic="true" class="toast position-fixed start-50 translate-middle p-1 mt-5 rounded-3">
             <div class="toast-header">
                 <h5 id="toastText" class="mx-auto">Toast Message</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -97,17 +99,32 @@ let toastElement =
         </div>`);
 // TODO: change position type because if you show 2 toast, only the 2nd one is shown. Also since there's only 1 instance, maybe can't shown 2 toast at the same time. Fix: always append the body with new toast. (Remove if() at beginning of function).
 function showToast(toastText, isSuccess) {
-    if (!toastInit) {
-        toastElement.appendTo(document.body);
-    }
-    toastInit = true;
+    let newToast = toastElement.clone();
 
-    toastElement.find("#toastText").text(toastText);
+    newToast.find("#toastText").text(toastText);
     let bgColor = isSuccess ? "bg-success-subtle" : "bg-warning-subtle";
-    toastElement.addClass(bgColor).find(".toast-header").addClass(bgColor);
+    newToast.addClass(bgColor).find(".toast-header").addClass(bgColor);
 
-    bootstrap.Toast.getOrCreateInstance(toastElement).show();
-    // new bootstrap.Toast(toastElement).show(); // Other method / Bootstrap's Toast API
+    newToast.css("top", toastOffset(toastCount) + "px"); // Calculate vertical offset to avoid overlap
+
+    newToast.appendTo(document.body);
+    bootstrap.Toast.getOrCreateInstance(newToast).show();
+    // new bootstrap.Toast(newToast).show(); // Other method / Bootstrap's Toast API
+
+    // Event listener to handle toast fade-out
+    newToast.on('hidden.bs.toast', () => {
+        toastCount--; // Decrement the counter when the toast hides
+        newToast.remove();
+        repositionToasts(); // Reposition remaining toasts
+    });
+    toastCount++;
+}
+
+// Reposition all visible toasts
+function repositionToasts() {
+    $('.toast').each((index, element) => {
+        $(element).css('top', toastOffset(index) + 'px');
+    });
 }
 
 // No encoding: innerHTML; Encoding: textContent or innerText;
